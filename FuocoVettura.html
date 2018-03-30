@@ -1,0 +1,111 @@
+
+<html>
+	<head>
+		<title>Fire Test</title>
+		<style>
+		body {
+			font-family: Monospace;
+			background-color: #f0f0f0;
+			margin: 0px;
+			overflow: hidden;
+		}
+		canvas {
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+		<script src="lib/three.min.js"></script>
+		<script src="lib/stats.min.js"></script>
+		<script src="lib/Coordinates.js"></script>
+		<script src="lib/OrbitControls.js"></script>
+	</head>
+	<body>
+		<script>
+			var scene, renderer, camera, stats,	moveToLeft,	moveToRight, controls;
+
+			function Start() {
+				scene = new THREE.Scene();
+				//scene.background = new THREE.color(0xff00cc);
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
+				renderer = new THREE.WebGLRenderer();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				controls = new THREE.OrbitControls( camera );
+				controls.enableKeys = false;
+				controls.addEventListener( 'change', Render );
+
+
+				// Geometria e materiale Fuoco e pivot di riferimento
+        cubes = new Array();
+        smokes = new THREE.Object3D();
+
+        var particles = 100;
+        for(var i = 0; i < particles; i++){
+
+				var geometry = new THREE.BoxGeometry(0.2,0.2,0.2);
+				var material = new THREE.MeshBasicMaterial( { color: 0xff0000} );
+        smokeParticle = new THREE.Mesh(geometry, material);
+        cubes[i] = smokeParticle;
+        cubes[i].position.y = i*(3/particles);
+        cubes[i].position.x = Math.random()*0.8 - 0.4;
+        smokeAxis.add(smokeParticle);
+      }
+      scene.add(smokeAxis);
+			smokeAxis.scale.x = 0.5;
+			smokeAxis.scale.y = 0.5;
+			smokeAxis.scale.z = 0.5;
+      smokeAxis.rotateZ(Math.PI);
+
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				document.body.appendChild( stats.domElement );
+				camera.position.z = 5;
+				camera.position.y = 5;
+				camera.lookAt(new THREE.Vector3(0,0,0));
+
+			}
+
+      //Aggiorna il fumo, puo' essere eseguita anche nel render;
+
+      function updateFire(cubes){
+        for(var i = 0; i < cubes.length; i++){
+          if(cubes[i].position.y < 3){
+           cubes[i].position.y += 0.06; //Sposta il cubo su y rispetto a smokeAxis;
+           cubes[i].position.x *= 0.97; //Fa convergere il flusso vero il centro di smokeAxis;
+           cubes[i].scale.x = cubes[i].scale.x*0.92; //Scala il cubo su x, y e z dello stesso fattore;
+           cubes[i].scale.y = cubes[i].scale.y*0.92;
+           cubes[i].scale.z = cubes[i].scale.z*0.92;
+           cubes[i].material.color.g += 0.045; //Varia il colore in modo che passi da rosso a giallo;
+         }else{
+           cubes[i].position.x = Math.random() - 0.5; //Scelgo una nuova posizione su X casuale per il cubo;
+           //Queste procedure resettano i cubetti allo stato iniziale;
+           cubes[i].position.y = 0;
+           cubes[i].scale.x = 1;
+           cubes[i].scale.y = 1;
+           cubes[i].scale.z = 1;
+           cubes[i].material.color.g = 0;
+        }
+      }
+    }
+
+        function Animate(){
+          requestAnimationFrame(Animate);
+          stats.update();
+
+          updateFire(cubes);
+
+          Render();
+        }
+
+				function Render() {
+			    renderer.render(scene, camera);
+				}
+
+				Start();
+				Animate();
+		</script>
+	</body>
+</html>

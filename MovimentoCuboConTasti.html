@@ -1,0 +1,152 @@
+
+<html>
+	<head>
+		<title>Input direzionale e collisione</title>
+		<style>
+		body {
+			font-family: Monospace;
+			background-color: #f0f0f0;
+			margin: 0px;
+			overflow: hidden;
+		}
+		canvas {
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+		<script src="lib/three.min.js"></script>
+		<script src="lib/stats.min.js"></script>
+		<script src="lib/Coordinates.js"></script>
+		<script src="lib/OrbitControls.js"></script>
+	</head>
+	<body>
+		<div id="collision"></div>
+		<script>
+			var scene, renderer, camera, stats,	moveToLeft,	moveToRight, controls;
+			var collision = false;
+
+			function Start() {
+				scene = new THREE.Scene();
+				//scene.background = new THREE.color(0xff00cc);
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
+				renderer = new THREE.WebGLRenderer();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+				/*
+				controls = new THREE.OrbitControls( camera );
+				controls.enableKeys = false;
+				controls.addEventListener( 'change', Render );
+				*/
+
+				// Geometria e materiali del cubo
+				var geometry = new THREE.BoxGeometry(1,1,1);
+				var material = new THREE.MeshBasicMaterial( { color: 0x0033CC, wireframe: true} );
+				cube = new THREE.Mesh(geometry, material);
+				cube.position.y = 0.5;
+
+				scene.add( cube );
+
+				//Geometria e materiali dell' ostacolo
+				var obstacleGeometry = new THREE.BoxGeometry(1, 1, 1);
+				var obstacleMaterial = new THREE.MeshBasicMaterial({color: 0xff9900, wireframe: true});
+				obstacle = new THREE.Mesh(obstacleGeometry, obstacleMaterial);
+				obstacle.position.x = -2;
+				obstacle.position.y = 0.5;
+
+				scene.add(obstacle);
+
+
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				document.body.appendChild( stats.domElement );
+				camera.position.z = 5;
+				camera.position.y = 5;
+				camera.lookAt(new THREE.Vector3(0,0,0));
+
+				/* Script per la pressione delle chiavi, sono state usate solo le chiavi
+				*  dei tasti direzionali laterali (Destra, Sinistra, A, D);
+				*/
+
+				var onKeyDown = function ( event ) {
+					switch ( event.keyCode ) {
+
+						case 37: // left
+						case 65: // a
+							moveToRight = false;
+							moveToLeft = true;
+							break;
+
+						case 39: // right
+						case 68: // d
+							moveToLeft = false;
+							moveToRight = true;
+							break;
+					}
+				};
+
+				document.addEventListener( 'keydown', onKeyDown);
+
+				moveToLeft = false;
+				moveToRight = false;
+
+			}
+
+			//Queste funzioni muovono il cubo finchè non raggiunge una determinata posizione, il moltiplicatore serve per determinare immediatamente la direzione;
+			function moveCubeRight(cube){
+				if(cube.position.x > 2){
+					moveToRight = false;
+					cubeIsRight = true;
+					cubeIsLeft = false;
+					cube.position.x = 2;
+				}
+				cube.position.x += 0.02;
+			}
+
+      function moveCubeLeft(cube){
+					if(cube.position.x < -2){
+						moveToLeft = false;
+						cubeIsRight = false;
+						cubeIsLeft = true;
+						cube.position.x = -2;
+					}
+					cube.position.x -= 0.02;
+      }
+
+			function printCollision(){
+				var node = document.getElementById("collision");
+				node.innerHTML = "<p>" + "<br/>" + "<br/>" + "<br/>" + "Collision:" + collision + "</p>";
+			}
+
+			function checkCollision(){
+				if(cube.position.x <= obstacle.position.x + 1 ){
+					collision = true;
+				}else{
+					collision = false;
+				}
+			}
+
+				function Render() {
+				requestAnimationFrame(Render);
+				checkCollision();
+					printCollision();
+			    stats.update();
+
+					if(moveToLeft){
+						moveCubeLeft(cube, -1);
+					}
+					if(moveToRight){
+						moveCubeRight(cube, 1);
+					}
+				cube.rotateY(0.01);
+
+			    renderer.render(scene, camera);
+
+				}
+
+				Start();
+				Render();
+		</script>
+	</body>
+</html>
