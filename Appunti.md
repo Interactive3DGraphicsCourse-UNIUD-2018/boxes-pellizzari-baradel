@@ -5,6 +5,9 @@
 * Inserire animazione dell'asteroide *n* ostacoli prima;
 * Inserire scritte: Start, Lose,...
 * Aggiungere i "fanali" alla macchina
+* Aggiungere nuovi ostacoli: pozzanghera (?)
+* Aggiungere pale eoliche sulla strada (?)
+
 
 ### Attualmente:
 * Sistemo il fuoco;
