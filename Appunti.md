@@ -6,6 +6,7 @@
 * Aggiungere i "fanali" alla macchina
 * Aggiungere nuovi ostacoli: pozzanghera (?)
 * Aggiungere pale eoliche sulla strada (?)
+* Copyright e dimensione texture
 
 
 ### Attualmente:
