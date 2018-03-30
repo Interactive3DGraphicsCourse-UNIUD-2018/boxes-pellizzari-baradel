@@ -9,5 +9,4 @@
 
 
 ### Attualmente:
-* Tento di sistemare la collisione del retro della macchina (non trovo errori nella logica, non dovrebbe fare una piega, eppure con il *- offset* non funziona più niente, ho provato anche a usare la parte che funziona e usarla per il lato dietro, quando metto *-offset* salta tutto);
-* Creo la rotazione della camera a fine percorso (aggiunto pivotCamera a cui *pivotCamera.add(camera)* e successivamente *pivotMacchina.add(pivotCamera)*);
+* Creo la rotazione della camera a fine percorso (aggiunto pivotCamera a cui *pivotCamera.add(camera)* e successivamente *pivotMacchina.add(pivotCamera)*). Fare in modo che la camera faccia solo un giro (o 3/4 di giro come in alcuni giochi) attorno alla macchina;
