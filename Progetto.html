@@ -91,7 +91,6 @@
 			scene.add( dirLight );
 			dirLight.target = pivotMacchina;
 
-
 			stats = new Stats();
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.top = '0px';
@@ -99,7 +98,6 @@
 
 			// Disegno gli assi cartesiani
 			Coordinates.drawAllAxes();
-
 
 			// Aggiungo i controlli
 			controls = new THREE.OrbitControls( camera );
@@ -124,18 +122,31 @@
 						muoviSx = false;
 						muoviDx = true;
 						break;
+					case 38:
+					case 87:
+						accelera = true;
+						break;
 				}
 			};
 
+			var onKeyUp = function ( event ) {
+				switch ( event.keyCode ) {
+					case 38:
+					case 87:
+						accelera = true;
+						break;
+				}
+			}
+
 			document.addEventListener( 'keydown', onKeyDown);
+			document.addEventListener( 'keyup', onKeyUp);
 
-			muoviSx = false;  // inizialmente entrambi a false
+			muoviSx = false;  // inizialmente tutti a false
 			muoviDx = false;
-
+			accelera = false;
 		}  // Start()
 
 		// FUNZIONI DI CREAZIONE DELLA PISTA E INSERIMENTO DEGLI OGGETTI (con eventuali funzioni ausiliarie)
-
 		function randomConRange(min, max){  // restituisce numeri x tali che: min <= x <= max
 			var range = (max - min) +1;
 			return (Math.floor(Math.random() * range) + min);
@@ -175,6 +186,7 @@
 				arrFuoco[i].position.x = Math.random()*0.8 - 0.4;
 				asseFuoco.add(particellaFuoco);
 			}
+			// Modificando asseFuoco è possibile modificare interamente la struttura del fuoco;
 			pivotMacchina.add(asseFuoco);
 			asseFuoco.position.z = 1.55;
 			asseFuoco.position.y = -0.2;
@@ -387,17 +399,22 @@
 
 		function aggiungiOstacolo(posizione, x, z){
 			var tipoOstacolo = scegliOstacolo(posizione);
-			if(tipoOstacolo == "tronco"){
-				aggiungiTronco(x, z);
-				tipoOstacoli[(-z/50) - 1] = "tronco";
-			} else if(tipoOstacolo == "masso"){
-				aggiungiMasso(x, z);
-				tipoOstacoli[(-z/50) - 1] = "masso";
-			} else if(tipoOstacolo == "asteroide"){
-				aggiungiAsteroide(x, z);
-				tipoOstacoli[(-z/50) - 1] = "asteroide";
-			} else if(tipoOstacolo == "albero"){
-				aggiungiAlbero(x, z);
+			switch(tipoOstacolo){
+				case "tronco":
+					aggiungiTronco(x,z);
+					tipoOstacoli[(-z/50) - 1] = "tronco";
+					break;
+				case  "masso":
+					aggiungiMasso(x, z);
+					tipoOstacoli[(-z/50) - 1] = "masso";
+					break;
+				case "asteroide":
+					aggiungiAsteroide(x, z);
+					tipoOstacoli[(-z/50) - 1] = "asteroide";
+					break;
+				case "albero":
+					aggiungiAlbero(x, z);
+					break;
 			}
 		}
 
@@ -487,7 +504,9 @@
 		function scegliSpostamentoMacchina(posizioneZMacchina){
 			if(posizioneZMacchina <= -10001){ // se arrivo alla fine
 				spostamentoMacchinaZ = 0;  // fermo la macchina
-			} else if(posizioneZMacchina <= fasciaPosizioneMacchina){  // quando raggiungo la fascia successiva
+			}else if(accelera){
+				spostamentoMacchinaZ += 0.001;
+			}else if(posizioneZMacchina <= fasciaPosizioneMacchina){  // quando raggiungo la fascia successiva
 				fasciaPosizioneMacchina -= 250;  // incremento il valore della fascia
 				spostamentoMacchinaZ += 0.05;  // incremento la "velocita" della macchina
 				spostamentoMacchinaX = 0.05;
@@ -514,7 +533,7 @@
 
 		// Controlla se la macchina collide con un bersaglio, in caso affermativo
 		// cambia il valore di gameOver a true e la partita termina
-		function controllaCollisioni(){			
+		function controllaCollisioni(){
 			// controllo con il prossimo ostacolo, ovvero con il primo ostacolo che si trova + avanti della macchina
 			var i = Math.floor(-pivotMacchina.position.z/50);
 			var posOstacoloZ = (50*(i+1));
@@ -523,7 +542,7 @@
 			if(collisioneAsseZ("avanti", posOstacoloZ, offsetMacchinaZ, distanzaZ) && collisioneAsseX(i, offsetMacchinaX, distanzaX)){
 				gameOver = true;
 			}  // altrimenti gameOver = false (valore assegnato all'inizio, quindi rimane inalterato)
-			
+
 			// controllo anche con l'ostacolo "precedente" (la macchina potrebbe aver superato di poco un ostacolo ma potrebbe ancora colpirlo)
 			i--;  // prendo l'indice dell'ostacolo precedente
 			if(i >= 0){  // se ha senso
@@ -547,7 +566,7 @@
 					return 2;
 			}
 		}
-		
+
 		// Controlla che ci sia collisione sull'asse delle X
 		function collisioneAsseX(i, offsetMacchinaX, distanzaX){
 			if(posizioneOstacoli[i] > 0){ // Se l'ostacolo si trova a destra
@@ -564,7 +583,7 @@
 				}
 			}
 		}
-		
+
 		// Funzione per calcolare metà la distanza dell'oggetto, in modo da coprire l'intera superfice;
 		function calcolaDistanzaZ(i){
 			switch(tipoOstacoli[i]){
@@ -576,7 +595,7 @@
 					return 2;
 			}
 		}
-		
+
 		// Controlla se la faccia della macchina passata come argomento collide, sull'asse Z, con l'ostacolo
 		function collisioneAsseZ(faccia, posOstacoloZ, offsetMacchinaZ, distanzaZ){
 			if(faccia == "avanti"){
@@ -589,7 +608,7 @@
 				return collisioneIndietro;
 			}
 		}
-		
+
 		function collisioneAvantiAsseZ(facciaAvanti, posOstacoloZ, distanzaZ){
 			var facciaAvantiOstacolo = posOstacoloZ - distanzaZ;
 			var facciaDietroOstacolo = posOstacoloZ + distanzaZ;
@@ -640,6 +659,14 @@
 			}
 		}
 
+		function rotateCamera(){
+			if (enableRotation){
+				for(var i = 0; i < 720; i++){
+					pivotCamera.rotateY(0.5*Math.PI/180);
+				}
+			}
+		}
+
 		// UPDATE E CICLO DI RENDER
 
 		function Update() {
@@ -649,10 +676,12 @@
 			// Aggiorno il Fuoco;
 			updateFire(arrFuoco);
 			// All'arrivo, la telecamera inizia a ruotare attorno alla macchina;
-			if(pivotMacchina.position.z <= -10001 || gameOver){ // se arrivo alla fine
-				pivotCamera.rotateY(0.01);  // TODO dopo 360 gradi basta
-			}
-
+			if(pivotMacchina.position.z <= -10001 || gameOver){ // se arrivo alla fine o gameOver
+			   enableRotation = true;
+			 }else{
+				 enableRotation = false;
+			 }
+			rotateCamera();
 			controls.update();
 			stats.update();
 			Render();
@@ -674,7 +703,6 @@
 			if(muoviDx && !gameOver){
 				muoviMacchinaDx(pivotMacchina);
 			}
-
 			renderer.render(scene, camera);
 		}
 
