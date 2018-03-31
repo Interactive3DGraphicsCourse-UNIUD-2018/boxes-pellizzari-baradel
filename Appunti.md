@@ -7,7 +7,4 @@
 * Aggiungere nuovi ostacoli: pozzanghera (?)
 * Aggiungere pale eoliche sulla strada (?)
 * Copyright e dimensione texture
-
-
-### Attualmente:
-* Creo la rotazione della camera a fine percorso (aggiunto pivotCamera a cui *pivotCamera.add(camera)* e successivamente *pivotMacchina.add(pivotCamera)*). Fare in modo che la camera faccia solo un giro (o 3/4 di giro come in alcuni giochi) attorno alla macchina;
+* Modificare il punteggio in base alla velocità della macchina e togliere gli incrementi automatici, in modo che i punti siano diversi in base a quanta velocità si ha raggiunto (? @lucaP vedi se ti sembra una cosa sensata);
