@@ -631,8 +631,6 @@
 			}
 		}
 
-
-
 		// Aggiorna il fuoco;
 		function updateFire(arrFuoco){
 			for(var i = 0; i < arrFuoco.length; i++){
@@ -671,26 +669,19 @@
 
 		function Update() {
 			requestAnimationFrame( Update );
-			// VERIFICO CHE NON CI SIANO COLLISIONI
-			controllaCollisioni();
-			// Aggiorno il Fuoco;
-			updateFire(arrFuoco);
-			// All'arrivo, la telecamera inizia a ruotare attorno alla macchina;
-			if(pivotMacchina.position.z <= -10001 || gameOver){ // se arrivo alla fine o gameOver
-			   enableRotation = true;
-			 }else{
-				 enableRotation = false;
-			 }
-			rotateCamera();
 			controls.update();
 			stats.update();
 			Render();
 		}
 
 		function Render() {
+			// AGGIORNO IL FUOCO
+			updateFire(arrFuoco);
 			// CALCOLO E STAMPO IL PUNTEGGIO
 			punteggio = Math.floor(Math.abs(pivotMacchina.position.z));
 			stampaPunteggio();
+			// VERIFICO CHE NON CI SIANO COLLISIONI
+			controllaCollisioni();
 			// CALCOLO LO SPOSTAMENTO CHE DOVREBBE FARE LA MACCHINA
 			scegliSpostamentoMacchina(pivotMacchina.position.z);  // in base alla posizione della macchina...
 			if(!gameOver){
@@ -703,6 +694,14 @@
 			if(muoviDx && !gameOver){
 				muoviMacchinaDx(pivotMacchina);
 			}
+			// ALL'ARRIVO FACCIO RUOTARE LA TELECAMERA ATTORNO ALLA MACCHINA
+			if(pivotMacchina.position.z <= -10001 || gameOver){ // se arrivo alla fine o gameOver
+				enableRotation = true;
+			}else{
+				enableRotation = false;
+			}
+			rotateCamera();
+			
 			renderer.render(scene, camera);
 		}
 
