@@ -17,7 +17,7 @@ function scegliLato(posizione){
 	 if(random == 0){
 	  return xDestra;                 //Posizione centrale della corsia di destra, centro dell'ostacolo
    } else {
-		return xSinistra;               //Posizione centrale della corsia di sinistra, centro dell'ostacolo
+	  return xSinistra;               //Posizione centrale della corsia di sinistra, centro dell'ostacolo
    }
    [...]
 ```
