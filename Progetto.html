@@ -29,8 +29,15 @@
 	</head>
 	<body>
 		<div class="right", id="punteggio" > </div>
+		
+		<div class="contenitore" id="contenitoreBottone" >
+			<button id="bottone" onclick="nuovaPartita()" >Nuova partita</button>
+		</div>
 
 		<script>
+		
+		document.getElementById("contenitoreBottone").style.display = "none";  // elimino/nascondo l'elemento (bottone di fine partita) dalla scena
+		
 		// VARIABILI PER LA CREAZIONE DELLA SCENA
 		var scene, camera, renderer, controls, stats, tabellaPunti, punti;
 		var pivotMacchina;  // pivot che contiene la macchina e la camera, così si muovono insieme
@@ -45,6 +52,7 @@
 		var fasciaPosizioneMacchina = 0;  // quanto lontano si trova la macchina dall'origine
 		var offsetMacchinaZ = 1.75;  // TODO globali???
 		var offsetMacchinaX = 0.75;  // TODO globali???
+		var bottoneInserito = false;
 
 		function Start() {
 			scene = new THREE.Scene();
@@ -507,11 +515,6 @@
 
 		// FUNZIONI PER IL MOVIMENTO DELLA MACCHINA (con eventuali funzioni ausiliarie)
 
-		function stampaPunteggio(){
-			var node = document.getElementById("punteggio");
-			node.innerHTML = "Punteggio:" + "<br/>" + punteggio;
-		}
-
 		function scegliSpostamentoMacchina(posizioneZMacchina){
 			if(posizioneZMacchina <= -10001){ // se arrivo alla fine
 				spostamentoMacchinaZ = 0;  // fermo la macchina
@@ -677,6 +680,15 @@
 				}
 			}
 		}
+		
+		function stampaPunteggio(){
+			var node = document.getElementById("punteggio");
+			node.innerHTML = "Punteggio:" + "<br/>" + punteggio;
+		}
+		
+		function nuovaPartita() {
+			location.reload();
+		}
 
 		// UPDATE E CICLO DI RENDER
 
@@ -714,6 +726,12 @@
 				enableRotation = false;
 			}
 			rotateCamera();
+			// SE PERDO INSERISCO IL BOTTONE E QUINDI DO LA POSSIBILITA DI RICARICARE LA PAGINA (iniziare una nuova partita)
+			if(gameOver  && !bottoneInserito){
+				document.getElementById("contenitoreBottone").style.display = "inline";  // inserisco il bottone nel documento
+				document.getElementById("contenitoreBottone").style="text-align:center;";  // lo posiziono al centro
+				bottoneInserito = true;
+			}
 			
 			renderer.render(scene, camera);
 		}
