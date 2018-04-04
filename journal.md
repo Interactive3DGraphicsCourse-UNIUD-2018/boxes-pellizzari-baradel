@@ -60,6 +60,11 @@ pivotMacchina.position.x += spostamentoMacchinaX*(xDestra*1.25 - pivotMacchina.p
 ```
 Dove *xDestra * 1,25* rappresenta un fattore di scala del movimento, mentre *pivotMacchina.position.x* rappresenta l'attuale posizione della macchina, in questo modo il valore dello spostamento varia dinamicamente a seconda della posizione attuale della macchina. (Nella procedura per lo spostamento nell'altro verso, *pivotMacchina.position.x* è sommato e non sottratto);
 
+### 4 aprile
+* Aggiunte texture erba e asfalto;
+* Modificate alcune misure e data trasparenza alle particelle del fuoco;
+Verificare la validità dei cambiamenti e la pertinenza.
+
 ### Sito delle Texture TEMP
 http://www.wildtextures.com/category/free-textures/
 
