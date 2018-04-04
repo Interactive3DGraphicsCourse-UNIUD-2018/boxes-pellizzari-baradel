@@ -41,3 +41,6 @@ Grazie a questi due array è possibile controllare le collisioni ad ogni iterazi
 ### Utilizzo della heightmap
 
 ## Considerazioni finali
+
+#### Fonti
+Movimento della macchina: https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_pointerlock.html Apllicazione delle texture sui vari oggetti: https://stackoverflow.com/questions/17418118/three-js-cube-with-different-texture-on-each-face
