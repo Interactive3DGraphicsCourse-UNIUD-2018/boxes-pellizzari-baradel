@@ -39,14 +39,15 @@
 
 				// Geometria e materiale Fuoco e pivot di riferimento
         cubes = new Array();
-        smokes = new THREE.Object3D();
+        smokeAxis = new THREE.Object3D();
 
         var particles = 100;
         for(var i = 0; i < particles; i++){
 
 				var geometry = new THREE.BoxGeometry(0.2,0.2,0.2);
 				var material = new THREE.MeshBasicMaterial( { color: 0xff0000} );
-        smokeParticle = new THREE.Mesh(geometry, material);
+				var materialPhong = new THREE.MeshPhongMaterial( {color: 0xff0000, transparent: true, opacity: 1} );
+        smokeParticle = new THREE.Mesh(geometry, materialPhong);
         cubes[i] = smokeParticle;
         cubes[i].position.y = i*(3/particles);
         cubes[i].position.x = Math.random()*0.8 - 0.4;
@@ -75,10 +76,11 @@
           if(cubes[i].position.y < 3){
            cubes[i].position.y += 0.06; //Sposta il cubo su y rispetto a smokeAxis;
            cubes[i].position.x *= 0.97; //Fa convergere il flusso vero il centro di smokeAxis;
-           cubes[i].scale.x = cubes[i].scale.x*0.92; //Scala il cubo su x, y e z dello stesso fattore;
-           cubes[i].scale.y = cubes[i].scale.y*0.92;
-           cubes[i].scale.z = cubes[i].scale.z*0.92;
+           //cubes[i].scale.x = cubes[i].scale.x*0.92; //Scala il cubo su x, y e z dello stesso fattore;
+           //cubes[i].scale.y = cubes[i].scale.y*0.92;
+           //cubes[i].scale.z = cubes[i].scale.z*0.92;
            cubes[i].material.color.g += 0.045; //Varia il colore in modo che passi da rosso a giallo;
+		   cubes.size -= 0.3;
          }else{
            cubes[i].position.x = Math.random() - 0.5; //Scelgo una nuova posizione su X casuale per il cubo;
            //Queste procedure resettano i cubetti allo stato iniziale;
