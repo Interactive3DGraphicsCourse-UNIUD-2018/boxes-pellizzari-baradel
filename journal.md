@@ -63,7 +63,6 @@ Dove *xDestra * 1,25* rappresenta un fattore di scala del movimento, mentre *piv
 ### 4 aprile
 * Aggiunte texture erba e asfalto;
 * Modificate alcune misure e data trasparenza alle particelle del fuoco;
-Verificare la validità dei cambiamenti e la pertinenza.
 
 ### Sito delle Texture TEMP
 http://www.wildtextures.com/category/free-textures/
