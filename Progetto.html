@@ -29,15 +29,15 @@
 	</head>
 	<body>
 		<div class="right", id="punteggio" > </div>
-		
+
 		<div class="contenitore" id="contenitoreBottone" >
 			<button id="bottone" onclick="nuovaPartita()" >Nuova partita</button>
 		</div>
 
 		<script>
-		
+
 		document.getElementById("contenitoreBottone").style.display = "none";  // elimino/nascondo l'elemento (bottone di fine partita) dalla scena
-		
+
 		// VARIABILI PER LA CREAZIONE DELLA SCENA
 		var scene, camera, renderer, controls, stats, tabellaPunti, punti;
 		var pivotMacchina;  // pivot che contiene la macchina e la camera, così si muovono insieme
@@ -53,6 +53,9 @@
 		var offsetMacchinaZ = 1.75;  // TODO globali???
 		var offsetMacchinaX = 0.75;  // TODO globali???
 		var bottoneInserito = false;
+
+		//TEMP Variabile di rotazione della pivotCamera
+		var rotazioneAttuale = 0;
 
 		function Start() {
 			scene = new THREE.Scene();
@@ -266,12 +269,12 @@
 			xDestra = larghezzaStrada/4;  // il centro della metà della strada a dx dell'origine
 			xSinistra = -larghezzaStrada/4;  // il centro della metà della strada a sx dell'origine
 			var geometriaStrada = new THREE.BoxGeometry(larghezzaStrada, altezzaStrada, lunghezzaStrada);
-			
+
 			var texture = THREE.ImageUtils.loadTexture('textures/asfalto.jpg');
-			texture.wrapS = THREE.RepeatWrapping; 
-			texture.wrapT = THREE.RepeatWrapping; 
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.wrapT = THREE.RepeatWrapping;
 			texture.repeat.set( 4, 2000 );
-			
+
 			var materialeStrada = new THREE.MeshPhongMaterial({map: texture});
 			var strada = new THREE.Mesh(geometriaStrada, materialeStrada);
 			var yStrada = yFineRuote -(altezzaStrada/2 + 0.2);  // la strada e' 0.2 + in basso delle ruote
@@ -354,10 +357,10 @@
 			var larghezzaErba = 30;
 			var geometriaErba = new THREE.BoxGeometry(larghezzaErba, altezzaStrada, lunghezzaStrada);
 			var texture = THREE.ImageUtils.loadTexture('textures/erba.jpg');
-			texture.wrapS = THREE.RepeatWrapping; 
-			texture.wrapT = THREE.RepeatWrapping; 
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.wrapT = THREE.RepeatWrapping;
 			texture.repeat.set( 10, 1500 );
-			var materialeErba = new THREE.MeshPhongMaterial({map: texture});			
+			var materialeErba = new THREE.MeshPhongMaterial({map: texture});
 			var erbaDestra = new THREE.Mesh(geometriaErba, materialeErba);
 			var erbaSinistra = new THREE.Mesh(geometriaErba, materialeErba);
 			var xErbaDestra = larghezzaStrada/2 + larghezzaErba/2 + 0.05;  // posiziono l'erba a lato della strada staccata di 0.05
@@ -674,18 +677,17 @@
 		}
 
 		function rotateCamera(){
-			if (enableRotation){
-				for(var i = 0; i < 720; i++){
-					pivotCamera.rotateY(0.5*Math.PI/180);
-				}
+			if(rotazioneAttuale < 360*Math.PI/180){ //Se la camera non ha compiuto un giro intorno alla macchina
+				rotazioneAttuale += 0.01;
+		  	pivotCamera.rotateY(0.01);
 			}
-		}
-		
+	}
+
 		function stampaPunteggio(){
 			var node = document.getElementById("punteggio");
 			node.innerHTML = "Punteggio:" + "<br/>" + punteggio;
 		}
-		
+
 		function nuovaPartita() {
 			location.reload();
 		}
@@ -725,14 +727,16 @@
 			}else{
 				enableRotation = false;
 			}
-			rotateCamera();
+			if(gameOver || pivotMacchina.position.z < -10000){
+				rotateCamera();
+			}
 			// SE PERDO INSERISCO IL BOTTONE E QUINDI DO LA POSSIBILITA DI RICARICARE LA PAGINA (iniziare una nuova partita)
 			if(gameOver  && !bottoneInserito){
 				document.getElementById("contenitoreBottone").style.display = "inline";  // inserisco il bottone nel documento
 				document.getElementById("contenitoreBottone").style="text-align:center;";  // lo posiziono al centro
 				bottoneInserito = true;
 			}
-			
+
 			renderer.render(scene, camera);
 		}
 
