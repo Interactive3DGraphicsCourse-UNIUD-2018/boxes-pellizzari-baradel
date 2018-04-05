@@ -2,7 +2,6 @@
 
 * Inserire alcune animazioni  "*a comando*" come la mongolfiera ecc;
 * Inserire animazione dell'asteroide *n* ostacoli prima;
-* Inserire scritta: hai vinto!
 * Aggiungere i "fanali" alla macchina
 * Aggiungere nuovi ostacoli: pozzanghera (?)
 * Aggiungere pale eoliche, lampioni (?)
