@@ -725,6 +725,37 @@
 		function nuovaPartita() {
 			location.reload();
 		}
+		
+		function stampaTestoFinale(){
+			if(gameOver){
+				var materialeTesto = new THREE.MeshPhongMaterial( {color: "red"} );  // TODO scegliere
+				stampaTesto("Hai perso!", materialeTesto);
+			}else if(punteggio == 10000){
+				var materialeTesto = new THREE.MeshPhongMaterial( {color: "Yellow"} );  // TODO scegliere
+				stampaTesto("Hai vinto!", materialeTesto);
+			}
+		}
+		
+		function stampaTesto(testo, materialeTesto){
+			var fontLoader = new THREE.FontLoader();
+
+			fontLoader.load('font/helvetiker_bold.typeface.json', function(font) {
+				var geometriaTesto = new THREE.TextGeometry(testo, {
+					font: font,
+					size: 3,
+					height: 0.5,
+					curveSegments: 10
+				});
+
+				geometriaTesto.computeBoundingBox();
+				var testoFinale = new THREE.Mesh(geometriaTesto, materialeTesto);
+				testoFinale.castShadow = true;
+				testoFinale.receiveShadow = true;
+				testoFinale.position.set(-10, pivotMacchina.position.y + 4, pivotMacchina.position.z - 2);
+				scene.add(testoFinale);
+
+			});
+		}
 
 		// UPDATE E CICLO DI RENDER
 
@@ -740,6 +771,9 @@
 			aggiornaFuoco(arrFuoco);
 			// CALCOLO E STAMPO IL PUNTEGGIO
 			punteggio = Math.floor(Math.abs(pivotMacchina.position.z));
+			if(punteggio >= 10000){  // non puo superare i 10000
+				punteggio = 10000;
+			}
 			stampaPunteggio();
 			// VERIFICO CHE NON CI SIANO COLLISIONI
 			controllaCollisioni();
@@ -764,8 +798,9 @@
 			if(gameOver || pivotMacchina.position.z < -10000){
 				rotateCamera();
 			}
-			// SE PERDO INSERISCO IL BOTTONE E QUINDI DO LA POSSIBILITA DI RICARICARE LA PAGINA (iniziare una nuova partita)
+			// SE PERDO INSERISCO IL TESTO FINALE E IL BOTTONE PER RICARICARE LA PAGINA (iniziare una nuova partita)
 			if(gameOver  && !bottoneInserito){
+				stampaTestoFinale();
 				document.getElementById("contenitoreBottone").style.display = "inline";  // inserisco il bottone nel documento
 				document.getElementById("contenitoreBottone").style="text-align:center;";  // lo posiziono al centro
 				bottoneInserito = true;
