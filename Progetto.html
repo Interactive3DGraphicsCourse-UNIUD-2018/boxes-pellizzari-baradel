@@ -103,25 +103,34 @@
 			dirLight.target = pivotMacchina;
 
 			//Aggiunto un fanale
-			tempGeom = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+			tempGeom = new THREE.BoxGeometry(0.1, 0.3, 0.2);
 			tempMat = new THREE.MeshBasicMaterial({color: "white"});
-			cuboriferimento = new THREE.Mesh(tempGeom, tempMat);
-			cuboriferimento.position.set(0, 0.2, -1.5);
-			pivotMacchina.add(cuboriferimento);
+			cuboriferimentoA = new THREE.Mesh(tempGeom, tempMat);
+			cuboriferimentoB = new THREE.Mesh(tempGeom, tempMat);
+
+ 			cuboriferimentoA.position.set(0.4, 0.2, -1.5);
+			cuboriferimentoB.position.set(-0.4, 0.2, -1.5);
+			pivotMacchina.add(cuboriferimentoA);
+			pivotMacchina.add(cuboriferimentoB);
 
 			pivotFanale = new THREE.Object3D();
 			pivotFanale.position.z = 0;
 			pivotMacchina.add(pivotFanale);
 
-			var fanale = new THREE.PointLight( 0xffffff, 10, 20 );
+			var fanaleA = new THREE.PointLight( 0xffffff, 5, 20 );
+			var fanaleB = new THREE.PointLight( 0xffffff, 5, 20 );
 			//fanale.position.set( 0, 0.9, -0.6 ); //(0, 0.9, -0.6) misure migliori;
-			fanale.position.set(0, 0.2, -1.5);
-			fanale.castShadow = true;
-			fanale.shadow.camera.near = 0.50;
-			pivotMacchina.add( fanale );
-			fanale.target = pivotFanale;
-			fanale.radius = 5;
-			fanale.rotateX(90*Math.PI/180);
+			fanaleA.position.set(0.4, 0.2, -1.5);
+			fanaleA.castShadow = true;
+			fanaleA.shadow.camera.near = 0.50;
+			pivotMacchina.add( fanaleA );
+			fanaleA.radius = 5;
+
+			fanaleB.position.set(-0.4, 0.2, -1.5);
+			fanaleB.castShadow = true;
+			fanaleB.shadow.camera.near = 0.50;
+			pivotMacchina.add( fanaleB );
+			fanaleB.radius = 5;
 
 			stats = new Stats();
 			stats.domElement.style.position = 'absolute';
