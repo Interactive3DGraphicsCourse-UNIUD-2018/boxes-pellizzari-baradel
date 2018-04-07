@@ -39,10 +39,10 @@
 
 				//Mulino
 
-				var geometriaBase = new THREE.BoxGeometry(5, 2, 5);
-				var geometriaCorpo = new THREE.BoxGeometry(4, 6, 4);
-				var geometriaTesta = new THREE.BoxGeometry(4, 2, 2);
-				var geometriaPala = new THREE.BoxGeometry(0.1, 12, 0.6);
+				var geometriaBase = new THREE.BoxGeometry(4, 2, 4);
+				var geometriaCorpo = new THREE.BoxGeometry(2.5, 6, 2.5);
+				var geometriaTesta = new THREE.BoxGeometry(2, 1, 1);
+				var geometriaPala = new THREE.BoxGeometry(0.1, 8, 0.6);
 				var geometriaPerno = new THREE.BoxGeometry(0.4, 0.4, 0.4);
 
 				var materialeBase = new THREE.MeshBasicMaterial({color: "grey"});
@@ -61,12 +61,12 @@
 				pivotMulino = new THREE.Object3D();
 
 				corpo.position.y = 4;
-				testa.position.set(0.5, 8, 0);
+				testa.position.set(0.5, 7, 0);
 				//palaA.position.set(2.6, 8, 0);
 				palaB.rotateX(90*Math.PI/180);
 				//palaB.position.set(2.6, 8, 0);
 				//perno.position.set(2.6, 8, 0);
-				pivotPerno.position.set(2.6, 8, 0);
+				pivotPerno.position.set(1.7, 7, 0);
 
 				pivotMulino.add(base);
 				pivotMulino.add(corpo);

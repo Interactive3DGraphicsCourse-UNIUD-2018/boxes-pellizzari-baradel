@@ -60,9 +60,15 @@ pivotMacchina.position.x += spostamentoMacchinaX*(xDestra*1.25 - pivotMacchina.p
 ```
 Dove *xDestra * 1,25* rappresenta un fattore di scala del movimento, mentre *pivotMacchina.position.x* rappresenta l'attuale posizione della macchina, in questo modo il valore dello spostamento varia dinamicamente a seconda della posizione attuale della macchina. (Nella procedura per lo spostamento nell'altro verso, *pivotMacchina.position.x* è sommato e non sottratto);
 
-### 4 aprile
+### Aggiunta texture
 * Aggiunte texture erba e asfalto;
 * Modificate alcune misure e data trasparenza alle particelle del fuoco;
+
+### Aggiunti nuovi elementi al progetto
+* Aggiunto un mulino con le pale che si muovono, verrà messo come ostacolo "esterno" quindi come decorazione della scena;
+* Aggiunto un omino che salta e muove le braccia, per il salto è stato usato il principio di fisica aggiungendo velocità e gravità;
+* Modificato il cielo e aggiunti i fari alla macchina e inserito il tasto di "Nuova Partita" in caso di vittoria o game over;
+* Aggiunti i testi di vittoria e sconfitta;
 
 ### Sito delle Texture TEMP
 http://www.wildtextures.com/category/free-textures/
