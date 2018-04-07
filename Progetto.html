@@ -276,7 +276,7 @@
 				ruota.castShadow = true;
 				ruota.position.set(vertici[j].x.x, vertici[j].x.y - dimensioneRuota/2, vertici[j].x.z);
 				pivotMacchina.add(ruota);
-			}  // for
+			}
 		}
 		// FUNZIONI PER INSERIRE LA STRADA E GLI ALTRI OGGETTI (oltre alla macchina gia inserita)
 
@@ -329,7 +329,7 @@
 				riga.receiveShadow = true;
 				scene.add(riga);
 				zPrimaRiga -= (2*lunghezzaRiga);
-			}  // for
+			}
 		}
 
 		function aggiungiCartelloArrivo(x,z){
@@ -498,15 +498,14 @@
 			scene.add(tronco);
 		}
 
-		function aggiungiAsteroide(x,z){  // da vedere in che posizione metterlo
+		function aggiungiAsteroide(x,z){
 			var geometriaAsteroide = new THREE.BoxGeometry(4,4,4);
 			var texture = THREE.ImageUtils.loadTexture('textures/asteroide.jpg');
 			var materialeAsteroide = new THREE.MeshPhongMaterial( { map: texture } );
 			var asteroide = new THREE.Mesh(geometriaAsteroide, materialeAsteroide);
 			asteroide.castShadow = true;
 			asteroide.receiveShadow = true;
-			asteroide.position.set(x,150,z);
-			scene.add(asteroide);
+			asteroide.position.set(x,200,z);
 			asteroidi[contatoreAsteroide] = asteroide;  // inserisco l'asteroide nel vettore per le animazioni
 			contatoreAsteroide++;
 		}
@@ -703,7 +702,9 @@
 		function controllaAsteroide(){
 			if(numAsteroide < contatoreAsteroide){
 				var distanzaZ = Math.abs(asteroidi[numAsteroide].position.z - pivotMacchina.position.z);
-				if(distanzaZ < 200){  // se l'asteroide e + distante di 150 non faccio niente
+				var distanzaApparizione = 150 + Math.abs(pivotMacchina.position.z/50);
+				if(distanzaZ < distanzaApparizione){  // se l'asteroide e' + distante di distanzaApparizione non faccio niente
+					scene.add(asteroidi[numAsteroide]);
 					animaAsteroide(distanzaZ);
 				}
 			}
