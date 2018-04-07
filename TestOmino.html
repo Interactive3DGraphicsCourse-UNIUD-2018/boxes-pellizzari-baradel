@@ -1,0 +1,135 @@
+
+<html>
+	<head>
+		<title>Omino Test</title>
+		<style>
+		body {
+			font-family: Monospace;
+			background-color: #f0f0f0;
+			margin: 0px;
+			overflow: hidden;
+		}
+		canvas {
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+		<script src="lib/three.min.js"></script>
+		<script src="lib/stats.min.js"></script>
+		<script src="lib/Coordinates.js"></script>
+		<script src="lib/OrbitControls.js"></script>
+	</head>
+	<body>
+		<script>
+			var scene, renderer, camera, stats,	controls, angoloBraccia = 0, invert = false;
+
+			function Start() {
+				scene = new THREE.Scene();
+				//scene.background = new THREE.color(0xffffff);
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
+				renderer = new THREE.WebGLRenderer();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				controls = new THREE.OrbitControls( camera );
+				controls.enableKeys = false;
+				controls.addEventListener( 'change', Render );
+
+
+				//Omino
+				var geometriaCorpo = new THREE.BoxGeometry(0.5, 1, 0.3);
+				var geometriaTesta = new THREE.BoxGeometry(0.25, 0.3, 0.25);
+				var geometriaArto = new THREE.BoxGeometry(0.1, 0.6, 0.1);
+
+				var materialeCorpo = new THREE.MeshBasicMaterial({color: "green"});
+				var materialeTesta = new THREE.MeshBasicMaterial({color: "pink"});
+				var materialeArto = new THREE.MeshBasicMaterial({color: "pink"});
+
+				var corpo = new THREE.Mesh(geometriaCorpo, materialeCorpo);
+				var testa = new THREE.Mesh(geometriaTesta, materialeTesta);
+				braccioA = new THREE.Mesh(geometriaArto, materialeArto);
+				braccioB = new THREE.Mesh(geometriaArto, materialeArto);
+				var gambaA = new THREE.Mesh(geometriaArto, materialeArto);
+				var gambaB = new THREE.Mesh(geometriaArto, materialeArto);
+
+				pivotBraccioA = new THREE.Object3D();
+				pivotBraccioB = new THREE.Object3D();
+				pivotOmino = new THREE.Object3D();
+
+				corpo.position.y = 0.75;
+				pivotOmino.add(corpo);
+				testa.position.y = 1.35;
+				pivotOmino.add(testa);
+				gambaA.position.x = 0.125;
+				gambaB.position.x = -0.125;
+				pivotOmino.add(gambaA);
+				pivotOmino.add(gambaB);
+
+				pivotBraccioA.position.y = 1.3;
+				braccioA.position.set(0.4, 0, 0);
+				braccioA.rotateZ(-40*Math.PI/180);
+
+				pivotBraccioB.position.y = 1.3;
+				braccioB.position.set(-0.4, 0, 0);
+				braccioB.rotateZ(40*Math.PI/180);
+				pivotBraccioA.add(braccioA);
+				pivotBraccioB.add(braccioB);
+
+				pivotOmino.add(pivotBraccioA);
+				pivotOmino.add(pivotBraccioB);
+				scene.add(pivotOmino);
+
+				velocitaOmino = 0.07;
+				gravita = 0.004;
+
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				document.body.appendChild( stats.domElement );
+				camera.position.z = 5;
+				camera.position.y = 5;
+				camera.lookAt(new THREE.Vector3(0,0,0));
+
+			}
+
+        function Animate(){
+          requestAnimationFrame(Animate);
+
+					//Movimento braccia
+					if(!invert){
+						pivotBraccioA.rotateZ(-0.025);
+						pivotBraccioB.rotateZ(0.025);
+						angoloBraccia += 0.03;
+						if(angoloBraccia >= 20*Math.PI/180){
+							invert = true;
+						}
+        	}else{
+						pivotBraccioA.rotateZ(0.025);
+						pivotBraccioB.rotateZ(-0.025);
+						angoloBraccia -= 0.03;
+						if(angoloBraccia <= 0){
+							invert = false;
+						}
+					}
+
+					//Salto
+					if(pivotOmino.position.y <= 0){
+						velocitaOmino = 0.07;
+					}
+					pivotOmino.position.y += velocitaOmino;
+					velocitaOmino -= gravita;
+
+				  stats.update();
+					Render();
+				}
+
+				function Render() {
+			    renderer.render(scene, camera);
+				}
+
+				Start();
+				Animate();
+		</script>
+	</body>
+</html>
