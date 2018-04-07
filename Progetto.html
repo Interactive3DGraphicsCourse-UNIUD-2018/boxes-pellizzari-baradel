@@ -59,12 +59,12 @@
 
 		function Start() {
 			scene = new THREE.Scene();
-			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 400 );
 			pivotMacchina = new THREE.Object3D();
 
 			renderer = new THREE.WebGLRenderer( {antialias: true} );
 			renderer.setSize( window.innerWidth, window.innerHeight );
-			renderer.setClearColor( 0xf0f0f0 );
+			renderer.setClearColor( 0x111155 );
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.gammaInput = true;
 			renderer.gammaOutput = true;
@@ -86,7 +86,7 @@
 			pivotMacchina.position.z = -(3 + 0.5)/2;  // posiziono la macchina all'inizio della strada (lunghezza macchina + lunghezza ruote)/2
 
 			// Aggiungo la luce emisferica
-			hemiLight = new THREE.HemisphereLight( 0xffffff, 0x0033ff, 0.3 );
+			hemiLight = new THREE.HemisphereLight( 0xffffff, 0x0033ff, 0.4 );
 			hemiLight.color.setHSL( 0.6, 1, 0.6 );
 			//hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
 			hemiLight.position.set( 0, 500, 0 );
@@ -108,8 +108,8 @@
 			cuboriferimentoA = new THREE.Mesh(tempGeom, tempMat);
 			cuboriferimentoB = new THREE.Mesh(tempGeom, tempMat);
 
- 			cuboriferimentoA.position.set(0.4, 0.2, -1.5);
-			cuboriferimentoB.position.set(-0.4, 0.2, -1.5);
+ 			cuboriferimentoA.position.set(0.4, 0.4, -1.5);
+			cuboriferimentoB.position.set(-0.4, 0.4, -1.5);
 			pivotMacchina.add(cuboriferimentoA);
 			pivotMacchina.add(cuboriferimentoB);
 
@@ -118,19 +118,39 @@
 			pivotMacchina.add(pivotFanale);
 
 			var fanaleA = new THREE.PointLight( 0xffffff, 5, 20 );
-			var fanaleB = new THREE.PointLight( 0xffffff, 5, 20 );
+			//var fanaleB = new THREE.PointLight( 0xffffff, 5, 20 );
 			//fanale.position.set( 0, 0.9, -0.6 ); //(0, 0.9, -0.6) misure migliori;
-			fanaleA.position.set(0.4, 0.2, -1.5);
+			fanaleA.position.set(0, 0.2, -1.5); //X = 0 da X = 0.4
 			fanaleA.castShadow = true;
 			fanaleA.shadow.camera.near = 0.50;
 			pivotMacchina.add( fanaleA );
 			fanaleA.radius = 5;
 
-			fanaleB.position.set(-0.4, 0.2, -1.5);
-			fanaleB.castShadow = true;
-			fanaleB.shadow.camera.near = 0.50;
-			pivotMacchina.add( fanaleB );
-			fanaleB.radius = 5;
+			// fanaleB.position.set(-0.4, 0.2, -1.5);
+			// fanaleB.castShadow = true;
+			// fanaleB.shadow.camera.near = 0.50;
+			// pivotMacchina.add( fanaleB );
+			// fanaleB.radius = 5;
+
+			//Aggiungo solo le luci dei lampioni all'inizio gara TEMP
+			geometriaLampione = new THREE.BoxGeometry(0.3, 10, 0.3);
+			materialeLampione = new THREE.MeshPhongMaterial({color:0x111111});
+			lampioneA = new THREE.Mesh(geometriaLampione, materialeLampione);
+			lampioneB = new THREE.Mesh(geometriaLampione, materialeLampione);
+			lampioneA.position.set(6, 3, -1);
+			lampioneB.position.set(-6, 3, -1);
+
+			scene.add(lampioneA);
+			scene.add(lampioneB);
+
+			var luceLampioneA = new THREE.PointLight( 0xffffff, 3, 50 );
+			var luceLampioneB = new THREE.PointLight( 0xffffff, 3, 50 );
+			luceLampioneA.position.set(6, 10, -1);
+			luceLampioneB.position.set(-6, 10, -1);
+			luceLampioneA.castShadow = true;
+			luceLampioneB.castShadow = true;
+			scene.add(luceLampioneA);
+			scene.add(luceLampioneB);
 
 			stats = new Stats();
 			stats.domElement.style.position = 'absolute';
@@ -138,7 +158,7 @@
 			document.body.appendChild( stats.domElement );
 
 			// Disegno gli assi cartesiani
-			Coordinates.drawAllAxes();
+			// Coordinates.drawAllAxes();
 
 			// Aggiungo i controlli
 			controls = new THREE.OrbitControls( camera );
@@ -725,7 +745,7 @@
 		function nuovaPartita() {
 			location.reload();
 		}
-		
+
 		function stampaTestoFinale(){
 			if(gameOver){
 				var materialeTesto = new THREE.MeshPhongMaterial( {color: "red"} );  // TODO scegliere
@@ -735,7 +755,7 @@
 				stampaTesto("Hai vinto!", materialeTesto);
 			}
 		}
-		
+
 		function stampaTesto(testo, materialeTesto){
 			var fontLoader = new THREE.FontLoader();
 
