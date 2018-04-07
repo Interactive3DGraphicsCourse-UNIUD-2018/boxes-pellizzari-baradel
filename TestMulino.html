@@ -1,0 +1,110 @@
+
+<html>
+	<head>
+		<title>Fire Test</title>
+		<style>
+		body {
+			font-family: Monospace;
+			background-color: #f0f0f0;
+			margin: 0px;
+			overflow: hidden;
+		}
+		canvas {
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+		<script src="lib/three.min.js"></script>
+		<script src="lib/stats.min.js"></script>
+		<script src="lib/Coordinates.js"></script>
+		<script src="lib/OrbitControls.js"></script>
+	</head>
+	<body>
+		<script>
+			var scene, renderer, camera, stats,	controls;
+
+			function Start() {
+				scene = new THREE.Scene();
+				//scene.background = new THREE.color(0xffffff);
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
+				renderer = new THREE.WebGLRenderer();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				controls = new THREE.OrbitControls( camera );
+				controls.enableKeys = false;
+				controls.addEventListener( 'change', Render );
+
+
+				//Mulino
+
+				var geometriaBase = new THREE.BoxGeometry(5, 2, 5);
+				var geometriaCorpo = new THREE.BoxGeometry(4, 6, 4);
+				var geometriaTesta = new THREE.BoxGeometry(4, 2, 2);
+				var geometriaPala = new THREE.BoxGeometry(0.1, 12, 0.6);
+				var geometriaPerno = new THREE.BoxGeometry(0.4, 0.4, 0.4);
+
+				var materialeBase = new THREE.MeshBasicMaterial({color: "grey"});
+				var materialeCorpo = new THREE.MeshBasicMaterial({color: "brown"});
+				var materialeTesta = new THREE.MeshBasicMaterial({color: "chocolate"});
+				var materialePala = new THREE.MeshBasicMaterial({color: "white"});
+				var materialePerno = new THREE.MeshBasicMaterial({color: "brown"});
+
+				var base = new THREE.Mesh(geometriaBase, materialeBase);
+				var corpo = new THREE.Mesh(geometriaCorpo, materialeCorpo);
+				var testa = new THREE.Mesh(geometriaTesta, materialeTesta);
+				var palaA = new THREE.Mesh(geometriaPala, materialePala);
+				var palaB = new THREE.Mesh(geometriaPala, materialePala);
+				var perno = new THREE.Mesh(geometriaPerno, materialePerno);
+				pivotPerno = new THREE.Object3D();
+				pivotMulino = new THREE.Object3D();
+
+				corpo.position.y = 4;
+				testa.position.set(0.5, 8, 0);
+				//palaA.position.set(2.6, 8, 0);
+				palaB.rotateX(90*Math.PI/180);
+				//palaB.position.set(2.6, 8, 0);
+				//perno.position.set(2.6, 8, 0);
+				pivotPerno.position.set(2.6, 8, 0);
+
+				pivotMulino.add(base);
+				pivotMulino.add(corpo);
+				pivotMulino.add(testa);
+
+				pivotPerno.add(palaA);
+				pivotPerno.add(palaB);
+				pivotPerno.add(perno);
+
+				pivotMulino.add(pivotPerno);
+				scene.add(pivotMulino);
+
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				document.body.appendChild( stats.domElement );
+				camera.position.z = 15;
+				camera.position.y = 15;
+				camera.lookAt(new THREE.Vector3(0,0,0));
+
+			}
+
+
+
+
+        function Animate(){
+          requestAnimationFrame(Animate);
+          stats.update();
+					pivotPerno.rotateX(0.01);
+          Render();
+        }
+
+				function Render() {
+			    renderer.render(scene, camera);
+				}
+
+				Start();
+				Animate();
+		</script>
+	</body>
+</html>

@@ -323,7 +323,7 @@
 			var materialeMezzeria = new THREE.MeshPhongMaterial({ color: "white"});
 			for(var i = 0; i < lunghezzaStrada/(2*lunghezzaRiga); i++){
 				var riga = new THREE.Mesh(geometriaMezzeria, materialeMezzeria);
-				riga.position.set(0, yStrada + altezzaStrada/2 + altezzaRiga/2 + 0.05, zPrimaRiga);  // le righe sono a 0.05 dalla strada (quindi a 0.05 anche dalle ruote)
+				riga.position.set(0, yStrada + altezzaStrada/2 + altezzaRiga/2, zPrimaRiga);  // le righe sono a 0.05 dalla strada (quindi a 0.05 anche dalle ruote)
 				riga.castShadow = true;
 				riga.receiveShadow = true;
 				scene.add(riga);
@@ -709,7 +709,7 @@
 		function nuovaPartita() {
 			location.reload();
 		}
-		
+
 		function controllaBottone(){
 			if(gameOver  && !bottoneInserito){
 				stampaTestoFinale();
@@ -718,7 +718,7 @@
 				bottoneInserito = true;
 			}
 		}
-		
+
 		function stampaTestoFinale(){
 			if(gameOver){
 				var materialeTesto = new THREE.MeshPhongMaterial( {color: "red"} );  // TODO scegliere
@@ -728,7 +728,7 @@
 				stampaTesto("Hai vinto!", materialeTesto);
 			}
 		}
-		
+
 		function stampaTesto(testo, materialeTesto){
 			var fontLoader = new THREE.FontLoader();
 
