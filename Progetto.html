@@ -44,7 +44,10 @@
 		var yFineRuote;  // punto sull'asse y in cui iniziano le ruote
 		var punteggio = 0;  // variabile per tenere conto dei punti in base alla distanza percorsa
 		var lunghezzaStrada = 10000;
-
+		// VARIABILI PER L'ANIMAZIONE DEGLI ASTEROIDI
+		var asteroidi = new Array();
+		var contatoreAsteroide = 0;
+		var numAsteroide = 0;
 		// VARIABILI PER IL MOVIMENTO DELLA MACCHINA
 		var xDestra, xSinistra;  // possibili valori della posizione x della macchina durante la partita (sulla strada)
 		var muoviDx, muoviSx;  // variabili booleane che servono per il movimento della macchina a destra e a sinistra
@@ -204,9 +207,7 @@
 
 			var particelle = 100;
 			for(var i = 0; i < particelle; i++){
-
 				var geometry = new THREE.BoxGeometry(0.2,0.2,0.2);
-				//var material = new THREE.MeshBasicMaterial( { color: 0xff0000} );
 				var material = new THREE.MeshPhongMaterial( {color: 0xff0000, transparent: true, opacity: 1} );
 				particellaFuoco = new THREE.Mesh(geometry, material);
 				arrFuoco[i] = particellaFuoco;
@@ -323,7 +324,7 @@
 			var materialeMezzeria = new THREE.MeshPhongMaterial({ color: "white"});
 			for(var i = 0; i < lunghezzaStrada/(2*lunghezzaRiga); i++){
 				var riga = new THREE.Mesh(geometriaMezzeria, materialeMezzeria);
-				riga.position.set(0, yStrada + altezzaStrada/2 + altezzaRiga/2, zPrimaRiga);  // le righe sono a 0.05 dalla strada (quindi a 0.05 anche dalle ruote)
+				riga.position.set(0, yStrada + altezzaStrada/2 + altezzaRiga/2 + 0.05, zPrimaRiga);  // le righe sono a 0.05 dalla strada (quindi a 0.05 anche dalle ruote)
 				riga.castShadow = true;
 				riga.receiveShadow = true;
 				scene.add(riga);
@@ -504,8 +505,10 @@
 			var asteroide = new THREE.Mesh(geometriaAsteroide, materialeAsteroide);
 			asteroide.castShadow = true;
 			asteroide.receiveShadow = true;
-			asteroide.position.set(x,yFineRuote + 2,z);  // +2 = + altezzaAsteroide/2 cosi ha la stessa y della macchina
+			asteroide.position.set(x,150,z);
 			scene.add(asteroide);
+			asteroidi[contatoreAsteroide] = asteroide;  // inserisco l'asteroide nel vettore per le animazioni
+			contatoreAsteroide++;
 		}
 
 		function aggiungiAlbero(x, z){
@@ -539,7 +542,7 @@
 		// FUNZIONI PER IL MOVIMENTO DELLA MACCHINA (con eventuali funzioni ausiliarie)
 
 		function scegliSpostamentoMacchina(posizioneZMacchina){
-			if(posizioneZMacchina <= -10001){ // se arrivo alla fine
+			if(posizioneZMacchina < -(10000 + offsetMacchinaZ)){ // se arrivo alla fine
 				spostamentoMacchinaZ = 0;  // fermo la macchina
 			}else if(posizioneZMacchina <= fasciaPosizioneMacchina){  // quando raggiungo la fascia successiva
 				fasciaPosizioneMacchina -= 250;  // incremento il valore della fascia
@@ -565,6 +568,8 @@
 					pivotMacchina.position.x -= spostamentoMacchinaX*(xDestra*1.25 + pivotMacchina.position.x); // Movimento della macchina su X piu' fluido
 				}
 		}
+		
+		// FUNZIONI PER GESTIRE LE COLLISIONI
 
 		// Controlla se la macchina collide con un bersaglio, in caso affermativo
 		// cambia il valore di gameOver a true e la partita termina
@@ -693,9 +698,36 @@
 				}
 			}
 		}
-
+		
+		// FUNZIONI PER LE ANIMAZIONI E PER IL PUNTEGGIO
+		function controllaAsteroide(){
+			if(numAsteroide < contatoreAsteroide){
+				var distanzaZ = Math.abs(asteroidi[numAsteroide].position.z - pivotMacchina.position.z);
+				if(distanzaZ < 200){  // se l'asteroide e + distante di 150 non faccio niente
+					animaAsteroide(distanzaZ);
+				}
+			}
+		}
+		
+		function animaAsteroide(distanzaZ){
+			var posizioneMinima = yFineRuote + 2;
+			var distanzaY = asteroidi[numAsteroide].position.y - posizioneMinima;  // distanza che l'asteroide deve percorrere su y
+			var velocitaDiscesa = calcolaVelocitaDiscesa(distanzaZ, distanzaY);
+			asteroidi[numAsteroide].position.y -= velocitaDiscesa;
+			if(asteroidi[numAsteroide].position.y <= posizioneMinima){  // se scende troppo
+				asteroidi[numAsteroide].position.y  = posizioneMinima;
+				numAsteroide++;
+			}
+		}
+		
+		function calcolaVelocitaDiscesa(distanzaZ, distanzaY){
+			var numeroFrameDistanzaZ = 	distanzaZ/2*spostamentoMacchinaZ;  // in quanti frame la macchina percorre distanzaZ
+			var velocita = distanzaY/numeroFrameDistanzaZ;
+			return velocita;
+		}
+		
 		function rotateCamera(){
-			if(rotazioneAttuale < 360*Math.PI/180){ //Se la camera non ha compiuto un giro intorno alla macchina
+			if(rotazioneAttuale < 360*Math.PI/180){ // Se la camera non ha compiuto un giro intorno alla macchina
 				rotazioneAttuale += 0.01;
 				pivotCamera.rotateY(0.01);
 			}
@@ -709,7 +741,7 @@
 		function nuovaPartita() {
 			location.reload();
 		}
-
+		
 		function controllaBottone(){
 			if(gameOver  && !bottoneInserito){
 				stampaTestoFinale();
@@ -718,7 +750,7 @@
 				bottoneInserito = true;
 			}
 		}
-
+		
 		function stampaTestoFinale(){
 			if(gameOver){
 				var materialeTesto = new THREE.MeshPhongMaterial( {color: "red"} );  // TODO scegliere
@@ -728,7 +760,7 @@
 				stampaTesto("Hai vinto!", materialeTesto);
 			}
 		}
-
+		
 		function stampaTesto(testo, materialeTesto){
 			var fontLoader = new THREE.FontLoader();
 
@@ -768,6 +800,8 @@
 				punteggio = 10000;
 			}
 			stampaPunteggio();
+			// ANIMO GLI EVENTUALI ASTEROIDI
+			controllaAsteroide();
 			// VERIFICO CHE NON CI SIANO COLLISIONI
 			controllaCollisioni();
 			// CALCOLO LO SPOSTAMENTO CHE DOVREBBE FARE LA MACCHINA
@@ -788,6 +822,7 @@
 			}
 			// SE PERDO INSERISCO IL TESTO FINALE E IL BOTTONE PER RICARICARE LA PAGINA (iniziare una nuova partita)
 			controllaBottone();
+			
 			renderer.render(scene, camera);
 		}
 
