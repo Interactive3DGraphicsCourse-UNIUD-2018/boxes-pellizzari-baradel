@@ -183,28 +183,13 @@
 						muoviSx = false;
 						muoviDx = true;
 						break;
-					case 38:
-					case 87:
-						accelera = true;
-						break;
 				}
 			};
 
-			var onKeyUp = function ( event ) {
-				switch ( event.keyCode ) {
-					case 38:
-					case 87:
-						accelera = true;
-						break;
-				}
-			}
-
 			document.addEventListener( 'keydown', onKeyDown);
-			document.addEventListener( 'keyup', onKeyUp);
 
 			muoviSx = false;  // inizialmente tutti a false
 			muoviDx = false;
-			accelera = false;
 		}  // Start()
 
 		// FUNZIONI DI CREAZIONE DELLA PISTA E INSERIMENTO DEGLI OGGETTI (con eventuali funzioni ausiliarie)
@@ -575,8 +560,6 @@
 		function scegliSpostamentoMacchina(posizioneZMacchina){
 			if(posizioneZMacchina <= -10001){ // se arrivo alla fine
 				spostamentoMacchinaZ = 0;  // fermo la macchina
-			}else if(accelera){
-				spostamentoMacchinaZ += 0.001;
 			}else if(posizioneZMacchina <= fasciaPosizioneMacchina){  // quando raggiungo la fascia successiva
 				fasciaPosizioneMacchina -= 250;  // incremento il valore della fascia
 				spostamentoMacchinaZ += 0.05;  // incremento la "velocita" della macchina
