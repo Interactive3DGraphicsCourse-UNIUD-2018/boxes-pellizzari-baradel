@@ -3,9 +3,9 @@ Primo progetto per il corso di Interactive 3D Graphics, anno accademico 2017/201
 
 ## Descrizione del Progetto
 Il progetto consiste in una web-app di un gioco di simulazione di guida. In questa applicazione l'utente potrà controllare un veicolo con lo scopo di raggiungere il traguardo cercando di evitare gli ostacoli, generati casualmente.
-I comandi disponibili sono quelli di movimenti laterale e uno per l'accelerazione (Freccia Sinistra, Freccia Destra, Freccia Su), oppure le lettere *W, A e D* (dai tasti *WASD*);
+I comandi disponibili sono quelli di movimenti laterale (Freccia Sinistra, Freccia Destra), oppure le lettere *A e D* (dai tasti *WASD*).
 
-Durante il gioco esiste una variabile punteggio che varia in base alla distanza percorsa, la velocità della macchina **TEMP** dipende sia dalla distanza percorsa (aumenti graduali ogni tot. unità) e dalla pressione del tasto *SU* che provoca un'accelerazione irreversibile della macchina per rendere il gioco più complesso e il punteggio più alto per la difficoltà.
+Durante il gioco esiste una variabile punteggio che corrisponde alla distanza percorsa dall'inizio della partita; anche la velocità della macchina dipende dalla distanza percorsa, in particolare questa aumenta di un certo fattore ogni 250 unità di spazio. 
 
 ## Risultato del Progetto
 ### Generazione degli ostacoli e decorazioni
