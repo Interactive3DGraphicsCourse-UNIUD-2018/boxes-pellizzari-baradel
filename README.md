@@ -48,10 +48,16 @@ Inoltre fra gli ostacoli vi è un asteroide che ha una bassa probabilità di app
 
 ## screenshots e immagini del Progetto
 
+![Screenshot1](/Screenshots/Screenshot1.jpg)
+![Screenshot2](/Screenshots/Screenshot2.jpg)
+![Screenshot3](/Screenshots/Screenshot3.jpg)
+![Screenshot4](/Screenshots/Screenshot4.jpg)
+
 
 #### Fonti
 Movimento della macchina: https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_pointerlock.html
 Applicazione delle texture sui vari oggetti: https://stackoverflow.com/questions/17418118/three-js-cube-with-different-texture-on-each-face
+Texture: http://www.wildtextures.com/category/free-textures/
 
 # Modeling and rendering with boxes
 
