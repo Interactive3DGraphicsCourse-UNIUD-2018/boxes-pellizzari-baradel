@@ -99,35 +99,28 @@
 			hemiLight.position.set( 0, 500, 0 );
 			scene.add( hemiLight );
 
-			//Aggiunto un fanale
+			//Aggiunta Fanale
 			tempGeom = new THREE.BoxGeometry(0.1, 0.3, 0.2);
 			tempMat = new THREE.MeshBasicMaterial({color: "white"});
-			cuboriferimentoA = new THREE.Mesh(tempGeom, tempMat);
-			cuboriferimentoB = new THREE.Mesh(tempGeom, tempMat);
+			fanaleA = new THREE.Mesh(tempGeom, tempMat);
+			fanaleB = new THREE.Mesh(tempGeom, tempMat);
 
- 			cuboriferimentoA.position.set(0.4, 0.2, -1.5);
-			cuboriferimentoB.position.set(-0.4, 0.2, -1.5);
-			pivotMacchina.add(cuboriferimentoA);
-			pivotMacchina.add(cuboriferimentoB);
+ 			fanaleA.position.set(0.4, 0.2, -1.5);
+			fanaleB.position.set(-0.4, 0.2, -1.5);
+			pivotMacchina.add(fanaleA);
+			pivotMacchina.add(fanaleB);
 
 			pivotFanale = new THREE.Object3D();
 			pivotFanale.position.z = 0;
 			pivotMacchina.add(pivotFanale);
 
-			var fanaleA = new THREE.PointLight( 0xffffff, 5, 20 );
-			var fanaleB = new THREE.PointLight( 0xffffff, 5, 20 );
+			var fanale = new THREE.PointLight( 0xffffff, 5, 20 );
 			//fanale.position.set( 0, 0.9, -0.6 ); //(0, 0.9, -0.6) misure migliori;
-			fanaleA.position.set(0.4, 0.2, -1.5);
-			fanaleA.castShadow = true;
-			fanaleA.shadow.camera.near = 0.50;
-			pivotMacchina.add( fanaleA );
-			fanaleA.radius = 5;
-
-			fanaleB.position.set(-0.4, 0.2, -1.5);
-			fanaleB.castShadow = true;
-			fanaleB.shadow.camera.near = 0.50;
-			pivotMacchina.add( fanaleB );
-			fanaleB.radius = 5;
+			fanale.position.set(0, 0.5, -1.5);
+			fanale.castShadow = true;
+			fanale.shadow.camera.near = 0.50;
+			pivotMacchina.add( fanale );
+			fanale.radius = 5;
 
 			stats = new Stats();
 			stats.domElement.style.position = 'absolute';
@@ -167,7 +160,17 @@
 
 			muoviSx = false;  // inizialmente tutti a false
 			muoviDx = false;
+
+			//Aggiunta Omini lungo il percorso
+			arrayOmini = new Array();
+			arrayVelOmini = new Array();
+			for (var i = 0; i < 83; i++){
+				var posizioneOminoZ = 75+(120*i);
+				aggiungiOmino(scegliLato()/2.5, -posizioneOminoZ);
+			}
 		}  // Start()
+
+
 
 		// FUNZIONI AUSILIARIE
 		function randomConRange(min, max){  // restituisce numeri x tali che: min <= x <= max
@@ -543,18 +546,31 @@
 			var geometriaPala = new THREE.BoxGeometry(0.1, 8, 0.6);
 			var geometriaPerno = new THREE.BoxGeometry(0.4, 0.4, 0.4);
 
-			var materialeBase = new THREE.MeshBasicMaterial({color: "grey"});
-			var materialeCorpo = new THREE.MeshBasicMaterial({color: "brown"});
-			var materialeTesta = new THREE.MeshBasicMaterial({color: "chocolate"});
-			var materialePala = new THREE.MeshBasicMaterial({color: "white"});
-			var materialePerno = new THREE.MeshBasicMaterial({color: "brown"});
+			var materialeBase = new THREE.MeshPhongMaterial({color: "grey"});
+			var materialeCorpo = new THREE.MeshPhongMaterial({color: "brown"});
+			var materialeTesta = new THREE.MeshPhongMaterial({color: "chocolate"});
+			var materialePala = new THREE.MeshPhongMaterial({color: "white"});
+			var materialePerno = new THREE.MeshPhongMaterial({color: "brown"});
 
 			var base = new THREE.Mesh(geometriaBase, materialeBase);
+			base.castShadow = true;
+			base.receiveShadow = true;
 			var corpo = new THREE.Mesh(geometriaCorpo, materialeCorpo);
+			corpo.castShadow = true;
+			corpo.receiveShadow = true;
 			var testa = new THREE.Mesh(geometriaTesta, materialeTesta);
+			testa.castShadow = true;
+			testa.receiveShadow = true;
 			var palaA = new THREE.Mesh(geometriaPala, materialePala);
+			palaA.castShadow = true;
+			palaA.receiveShadow = true;
 			var palaB = new THREE.Mesh(geometriaPala, materialePala);
+			palaB.castShadow = true;
+			palaB.receiveShadow = true;
 			var perno = new THREE.Mesh(geometriaPerno, materialePerno);
+			perno.castShadow = true;
+			perno.receiveShadow = true;
+
 			pivotPerno = new THREE.Object3D();
 			pivotMulino = new THREE.Object3D();
 
@@ -577,7 +593,7 @@
 			pivotPerno.add(perno);
 
 			pivotMulino.add(pivotPerno);
-			pivotMulino.position.x = x;
+			pivotMulino.position.x = x / 1.3;
 			pivotMulino.position.z = z;
 
 			posizioneZMulini[contatoreMulini] = z;
@@ -587,21 +603,33 @@
 			scene.add(pivotMulino);
 		}
 
-		function aggiungiOmino(){
+		function aggiungiOmino(x, z){
 			var geometriaCorpo = new THREE.BoxGeometry(0.5, 1, 0.3);
 			var geometriaTesta = new THREE.BoxGeometry(0.25, 0.3, 0.25);
 			var geometriaArto = new THREE.BoxGeometry(0.1, 0.6, 0.1);
 
-			var materialeCorpo = new THREE.MeshBasicMaterial({color: "green"});
-			var materialeTesta = new THREE.MeshBasicMaterial({color: "pink"});
-			var materialeArto = new THREE.MeshBasicMaterial({color: "pink"});
+			var materialeCorpo = new THREE.MeshPhongMaterial({color: "green"});
+			var materialeTesta = new THREE.MeshPhongMaterial({color: "pink"});
+			var materialeArto = new THREE.MeshPhongMaterial({color: "pink"});
 
 			var corpo = new THREE.Mesh(geometriaCorpo, materialeCorpo);
+			corpo.castShadow = true;
+			corpo.receiveShadow = true;
 			var testa = new THREE.Mesh(geometriaTesta, materialeTesta);
+			testa.castShadow = true;
+			testa.receiveShadow = true;
 			braccioA = new THREE.Mesh(geometriaArto, materialeArto);
+			braccioA.castShadow = true;
+			braccioA.receiveShadow = true;
 			braccioB = new THREE.Mesh(geometriaArto, materialeArto);
+			braccioB.castShadow = true;
+			braccioB.receiveShadow = true;
 			var gambaA = new THREE.Mesh(geometriaArto, materialeArto);
+			gambaA.castShadow = true;
+			gambaA.receiveShadow = true;
 			var gambaB = new THREE.Mesh(geometriaArto, materialeArto);
+			gambaB.castShadow = true;
+			gambaB.receiveShadow = true;
 
 			pivotBraccioA = new THREE.Object3D();
 			pivotBraccioB = new THREE.Object3D();
@@ -630,11 +658,32 @@
 			pivotOmino.add(pivotBraccioB);
 			scene.add(pivotOmino);
 
-			velocitaOmino = 0.07; // Variabile per il salto
-			gravita = 0.004; // Variabile di gravita per migliorare il salto
+			//Aggiustamenti omino
+			pivotOmino.scale.x = 1.6;
+			pivotOmino.scale.y = 1.6;
+			pivotOmino.scale.z = 1.6;
+			pivotOmino.position.set(x, -0.8, z);
+
+			velocitaOmino = 0.25; // Variabile per il salto
+			gravita = 0.015; // Variabile di gravita per migliorare il salto
+
+			arrayOmini.push(pivotOmino);
+			arrayVelOmini.push(velocitaOmino);
 		}
 
-		// FUNZIONI PER IL MOVIMENTO DELLA MACCHINA (con eventuali funzioni ausiliarie)
+		function aggiornaOmini(){
+			for(var i = 0; i <arrayOmini.length; i++){
+				if(-pivotMacchina.position.z + 50 > -arrayOmini[i].position.z){ //&& -pivotMacchina.position.z - 50 < -arrayOmini[i].position.z)
+					//Salto
+					if(arrayOmini[i].position.y <= -0.8){
+						arrayVelOmini[i] = 0.25;
+					}
+					arrayOmini[i].position.y += arrayVelOmini[i];
+					arrayVelOmini[i] -= gravita;
+				 }
+			}
+		}
+		// FUNZIONI PER IL MOVIMENTO DELLA MACCHINA (con eventuali funzioni ausiliarie
 
 		function scegliSpostamentoMacchina(posizioneZMacchina){
 			if(posizioneZMacchina < -(10000 + offsetMacchinaZ)){ // se arrivo alla fine
@@ -901,6 +950,7 @@
 		function animaScena(){
 			// AGGIORNO IL FUOCO
 			aggiornaFuoco(arrFuoco);
+			aggiornaOmini();
 			if(!gameOver){
 				// ANIMO GLI EVENTUALI ASTEROIDI
 				controllaAsteroide();
