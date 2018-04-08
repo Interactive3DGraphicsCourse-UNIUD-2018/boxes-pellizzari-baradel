@@ -5,7 +5,7 @@
 
 		body {
 			font-family: Monospace;
-			background-color: #f0f0f0;
+			background-color: #71b2cf;
 			margin: 0px;
 			overflow: hidden;
 		}
@@ -44,10 +44,14 @@
 		var yFineRuote;  // punto sull'asse y in cui iniziano le ruote
 		var punteggio = 0;  // variabile per tenere conto dei punti in base alla distanza percorsa
 		var lunghezzaStrada = 10000;
-		// VARIABILI PER L'ANIMAZIONE DEGLI ASTEROIDI
+		// VARIABILI PER LE ANIMAZIONI
 		var asteroidi = new Array();
 		var contatoreAsteroide = 0;
 		var numAsteroide = 0;
+		var mulini = new Array();
+		var posizioneZMulini = new Array();
+		var contatoreMulini = 0;
+		var numMulini = 0;
 		// VARIABILI PER IL MOVIMENTO DELLA MACCHINA
 		var xDestra, xSinistra;  // possibili valori della posizione x della macchina durante la partita (sulla strada)
 		var muoviDx, muoviSx;  // variabili booleane che servono per il movimento della macchina a destra e a sinistra
@@ -58,7 +62,7 @@
 		var offsetMacchinaX = 0.75;  // distanza fra centro della macchina e fine della fiancata (su x)
 		var bottoneInserito = false;
 
-		//TEMP Variabile di rotazione della pivotCamera
+		// Variabile di rotazione della pivotCamera
 		var rotazioneAttuale = 0;
 
 		function Start() {
@@ -68,7 +72,7 @@
 
 			renderer = new THREE.WebGLRenderer( {antialias: true} );
 			renderer.setSize( window.innerWidth, window.innerHeight );
-			renderer.setClearColor( 0xf0f0f0 );
+			renderer.setClearColor( 0x71b2cf );
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.gammaInput = true;
 			renderer.gammaOutput = true;
@@ -88,23 +92,12 @@
 
 			pivotMacchina.position.x = scegliLato("interno");  // posiziono la macchina su uno dei due lati (a caso)
 			pivotMacchina.position.z = -(3 + 0.5)/2;  // posiziono la macchina all'inizio della strada (lunghezza macchina + lunghezza ruote)/2
-
+			
 			// Aggiungo la luce emisferica
 			hemiLight = new THREE.HemisphereLight( 0xffffff, 0x0033ff, 0.3 );
 			hemiLight.color.setHSL( 0.6, 1, 0.6 );
-			//hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
 			hemiLight.position.set( 0, 500, 0 );
 			scene.add( hemiLight );
-			// Aggiungo la luce direzionale
-			dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
-			dirLight.color.setHSL( 0.1, 1, 0.95 );
-			dirLight.position.set( 0, 1, -1 );  // -1, 1.75, 1
-			dirLight.position.multiplyScalar( 5000 );
-			dirLight.castShadow = true;
-			dirLight.shadow.mapSize.width = 1024;
-			dirLight.shadow.mapSize.height = 1024;
-			//scene.add( dirLight );
-			dirLight.target = pivotMacchina;
 
 			//Aggiunto un fanale
 			tempGeom = new THREE.BoxGeometry(0.1, 0.3, 0.2);
@@ -307,10 +300,10 @@
 		}
 
 		function aggiungiBloccoFine(altezzaStrada, yStrada, z){
-			var geometriaBlocco = new THREE.BoxGeometry(70, altezzaStrada, 6);
-			var materialeBlocco = new THREE.MeshPhongMaterial({color: "black"});  // TODO cambiare colore
+			var geometriaBlocco = new THREE.BoxGeometry(70, altezzaStrada, 60);
+			var materialeBlocco = new THREE.MeshPhongMaterial({color: 0x824200});
 			var blocco = new THREE.Mesh(geometriaBlocco, materialeBlocco);
-			blocco.position.set(0, yStrada, z - 3 - 0.05);  // 3 = lunghezzaBlocco/2, 0.05 per staccarlo dalla strada
+			blocco.position.set(0, yStrada, z - 30 - 0.05);  // 30 = lunghezzaBlocco/2, 0.05 per staccarlo dalla strada
 			blocco.castShadow = true;
 			blocco.receiveShadow = true;
 			scene.add(blocco);
@@ -454,6 +447,9 @@
 				case "albero":
 					aggiungiAlbero(x, z);
 					break;
+				case "mulino":
+					aggiungiMulino(x, z);
+					break;
 			}
 		}
 
@@ -462,15 +458,17 @@
 				var random = randomConRange(1,100);
 				if(random <= 45){  // 45% tronco
 					return "tronco";
-				} else if(random > 45 && random <= 90) {  // 45% masso
+				}else if(random > 45 && random <= 90) {  // 45% masso
 					return "masso";
-				} else { // 10% asteroide
+				}else{ // 10% asteroide
 					return "asteroide";
 				}
 			} else {  // ostacoli fuori dalla strada
 				var random = randomConRange(1,100);
-				if(random <= 100){
+				if(random <= 60){  // 60% albero
 					return "albero";
+				}else if(random > 60){  // 40% mulino
+					return "mulino";
 				}
 			}
 		}
@@ -536,6 +534,57 @@
 				y = y + dim;
 				dim = 2/3 * dim;
 			}
+		}
+
+		function aggiungiMulino(x, z){
+			var geometriaBase = new THREE.BoxGeometry(4, 2, 4);
+			var geometriaCorpo = new THREE.BoxGeometry(2.5, 6, 2.5);
+			var geometriaTesta = new THREE.BoxGeometry(2, 1, 1);
+			var geometriaPala = new THREE.BoxGeometry(0.1, 8, 0.6);
+			var geometriaPerno = new THREE.BoxGeometry(0.4, 0.4, 0.4);
+			
+			var materialeBase = new THREE.MeshBasicMaterial({color: "grey"});
+			var materialeCorpo = new THREE.MeshBasicMaterial({color: "brown"});
+			var materialeTesta = new THREE.MeshBasicMaterial({color: "chocolate"});
+			var materialePala = new THREE.MeshBasicMaterial({color: "white"});
+			var materialePerno = new THREE.MeshBasicMaterial({color: "brown"});
+
+			var base = new THREE.Mesh(geometriaBase, materialeBase);
+			var corpo = new THREE.Mesh(geometriaCorpo, materialeCorpo);
+			var testa = new THREE.Mesh(geometriaTesta, materialeTesta);
+			var palaA = new THREE.Mesh(geometriaPala, materialePala);
+			var palaB = new THREE.Mesh(geometriaPala, materialePala);
+			var perno = new THREE.Mesh(geometriaPerno, materialePerno);
+			pivotPerno = new THREE.Object3D();
+			pivotMulino = new THREE.Object3D();
+
+			corpo.position.y = yFineRuote + 2 +3; // 2 = altezzaBase, 3 = altezzaCorpo/2
+			palaB.rotateX(90*Math.PI/180);
+			if(x < 0){  // siamo a sinistra
+				testa.position.set(0.5, corpo.position.y +3, 0);
+				pivotPerno.position.set(1.7, testa.position.y, 0);
+			}else if(x > 0){  // siamo a destra
+				testa.position.set(-0.5, corpo.position.y +3, 0);
+				pivotPerno.position.set(-1.7, testa.position.y, 0);				
+			}
+
+			pivotMulino.add(base);
+			pivotMulino.add(corpo);
+			pivotMulino.add(testa);
+			
+			pivotPerno.add(palaA);
+			pivotPerno.add(palaB);
+			pivotPerno.add(perno);
+			
+			pivotMulino.add(pivotPerno);
+			pivotMulino.position.x = x;
+			pivotMulino.position.z = z;
+			
+			posizioneZMulini[contatoreMulini] = z;
+			mulini[contatoreMulini] = pivotPerno;  // inserisco il perno nel vettore per le animazioni
+			contatoreMulini++;
+			
+			scene.add(pivotMulino);
 		}
 
 		// FUNZIONI PER IL MOVIMENTO DELLA MACCHINA (con eventuali funzioni ausiliarie)
@@ -669,8 +718,7 @@
 				return false;
 			}
 		}
-
-		// Aggiorna il fuoco;
+		// FUNZIONI PER LE ANIMAZIONI E PER IL PUNTEGGIO
 		function aggiornaFuoco(arrFuoco){
 			for(var i = 0; i < arrFuoco.length; i++){
 				if(arrFuoco[i].position.y < 3 && !gameOver){
@@ -682,7 +730,7 @@
 					arrFuoco[i].material.color.g += 0.06; //Varia il colore in modo che passi da rosso a giallo;
 					arrFuoco[i].material.opacity -= 0.03;
 				}else{
-					if(!gameOver){
+					if(!gameOver && punteggio < 10000){
 						arrFuoco[i].position.x = Math.random() - 0.5; //Scelgo una nuova posizione su X casuale per il cubo;
 						// Queste procedure resettano i cubetti allo stato iniziale;
 						arrFuoco[i].position.y = 0;
@@ -698,7 +746,6 @@
 			}
 		}
 		
-		// FUNZIONI PER LE ANIMAZIONI E PER IL PUNTEGGIO
 		function controllaAsteroide(){
 			if(numAsteroide < contatoreAsteroide){
 				var distanzaZ = Math.abs(asteroidi[numAsteroide].position.z - pivotMacchina.position.z);
@@ -727,8 +774,29 @@
 			return velocita;
 		}
 		
+		function controllaMulino(){
+			if(numMulini < contatoreMulini){  // se ci sono ancora mulini in scena
+				var distanzaMacchMul = Math.abs(posizioneZMulini[numMulini] - pivotMacchina.position.z);
+				var distanzaInizioAnimazione = 250 + Math.abs(pivotMacchina.position.z/50);
+				var distanzaFineAnimazione = 20 + Math.abs(pivotMacchina.position.z/75);
+				console.log(distanzaMacchMul + " " + distanzaInizioAnimazione + " " + distanzaFineAnimazione);
+				if(distanzaFineAnimazione < distanzaMacchMul && distanzaMacchMul < distanzaInizioAnimazione){  // se sono abbastanza vicino ad un mulino inizio l'animazione
+					animaMulino();
+					console.log("Sto animando il mulino " + numMulini);
+				}else if(distanzaFineAnimazione > distanzaMacchMul){  // se sono troppo vicino fermo l'animazione e passo al mulino successivo
+					numMulini++;
+					console.log("Passo al mulino " + numMulini);
+				}
+				// se sono troppo lontano dal mulino non faccio niente finche non mi avvicino abbastanza per poter vedere l'animazione
+			}
+		}
+		
+		function animaMulino(){
+			mulini[numMulini].rotateX(0.01);
+		}
+		
 		function rotateCamera(){
-			if(rotazioneAttuale < 360*Math.PI/180){ // Se la camera non ha compiuto un giro intorno alla macchina
+			if(rotazioneAttuale < rad(360)){ // Se la camera non ha compiuto un giro intorno alla macchina
 				rotazioneAttuale += 0.01;
 				pivotCamera.rotateY(0.01);
 			}
@@ -744,7 +812,7 @@
 		}
 		
 		function controllaBottone(){
-			if(gameOver  && !bottoneInserito){
+			if(!bottoneInserito){
 				stampaTestoFinale();
 				document.getElementById("contenitoreBottone").style.display = "inline";  // inserisco il bottone nel documento
 				document.getElementById("contenitoreBottone").style="text-align:center;";  // lo posiziono al centro
@@ -754,10 +822,10 @@
 		
 		function stampaTestoFinale(){
 			if(gameOver){
-				var materialeTesto = new THREE.MeshPhongMaterial( {color: "red"} );  // TODO scegliere
+				var materialeTesto = new THREE.MeshPhongMaterial( {color: "red"} );
 				stampaTesto("Hai perso!", materialeTesto);
-			}else if(punteggio == 10000){
-				var materialeTesto = new THREE.MeshPhongMaterial( {color: "Yellow"} );  // TODO scegliere
+			}else{
+				var materialeTesto = new THREE.MeshPhongMaterial( {color: "red"} );
 				stampaTesto("Hai vinto!", materialeTesto);
 			}
 		}
@@ -782,6 +850,48 @@
 
 			});
 		}
+		
+		function animaScena(){
+			// AGGIORNO IL FUOCO
+			aggiornaFuoco(arrFuoco);
+			if(!gameOver){
+				// ANIMO GLI EVENTUALI ASTEROIDI
+				controllaAsteroide();
+				// ANIMA MULINO
+				controllaMulino();
+				// VERIFICO CHE NON CI SIANO COLLISIONI
+				controllaCollisioni();
+				// CALCOLO LO SPOSTAMENTO CHE DOVREBBE FARE LA MACCHINA
+				scegliSpostamentoMacchina(pivotMacchina.position.z);  // in base alla posizione della macchina...
+				if(!gameOver){
+					pivotMacchina.position.z -= spostamentoMacchinaZ;  // imposto la sua velocità
+				}
+				// IN BASE AI TASTI PREMUTI VADO AVANTI (se non si verifica il gameOver)
+				if(muoviSx){
+					muoviMacchinaSx(pivotMacchina);
+				}
+				if(muoviDx){
+					muoviMacchinaDx(pivotMacchina);
+				}
+				// ALL'ARRIVO, SE VINCO FACCIO RUOTARE LA TELECAMERA ATTORNO ALLA MACCHINA E INSERISCO IL BOTTONE DI NUOVA PARTITA
+				if(pivotMacchina.position.z < -10000){
+					rotateCamera();
+					controllaBottone();
+				}
+			}else{  // gameOver
+				// FACCIO RUOTARE LA TELECAMERA ATTORNO ALLA MACCHINA E INSERISCO IL BOTTONE DI NUOVA PARTITA
+				rotateCamera();
+				controllaBottone();
+			}
+			
+			// CALCOLO E STAMPO IL PUNTEGGIO
+			punteggio = Math.floor(Math.abs(pivotMacchina.position.z));
+			if(punteggio >= 10000){  // non puo superare i 10000
+				punteggio = 10000;
+			}
+			stampaPunteggio();
+			
+		}
 
 		// UPDATE E CICLO DI RENDER
 
@@ -793,37 +903,7 @@
 		}
 
 		function Render() {
-			// AGGIORNO IL FUOCO
-			aggiornaFuoco(arrFuoco);
-			// CALCOLO E STAMPO IL PUNTEGGIO
-			punteggio = Math.floor(Math.abs(pivotMacchina.position.z));
-			if(punteggio >= 10000){  // non puo superare i 10000
-				punteggio = 10000;
-			}
-			stampaPunteggio();
-			// ANIMO GLI EVENTUALI ASTEROIDI
-			controllaAsteroide();
-			// VERIFICO CHE NON CI SIANO COLLISIONI
-			controllaCollisioni();
-			// CALCOLO LO SPOSTAMENTO CHE DOVREBBE FARE LA MACCHINA
-			scegliSpostamentoMacchina(pivotMacchina.position.z);  // in base alla posizione della macchina...
-			if(!gameOver){
-				pivotMacchina.position.z -= spostamentoMacchinaZ;  // imposto la sua velocità
-			}
-			// IN BASE AI TASTI PREMUTI VADO AVANTI (se non si verifica il gameOver)
-			if(muoviSx && !gameOver){
-				muoviMacchinaSx(pivotMacchina);
-			}
-			if(muoviDx && !gameOver){
-				muoviMacchinaDx(pivotMacchina);
-			}
-			// ALL'ARRIVO FACCIO RUOTARE LA TELECAMERA ATTORNO ALLA MACCHINA
-			if(gameOver || pivotMacchina.position.z < -10000){
-				rotateCamera();
-			}
-			// SE PERDO INSERISCO IL TESTO FINALE E IL BOTTONE PER RICARICARE LA PAGINA (iniziare una nuova partita)
-			controllaBottone();
-			
+			animaScena();
 			renderer.render(scene, camera);
 		}
 
