@@ -42,14 +42,16 @@ Grazie a questi due array è possibile controllare le collisioni ad ogni iterazi
 Si è scelto di creare un paesaggio nella scena in modo da rendere più interessante il tragitto, anche gli ostacoli "esterni" (quindi le decorazioni) sono inseriti casualmente, le decorazioni sono:
 * un semplice albero;
 * un mulino le cui pale ruotano quando la macchina si avvicina;
-* un omino che salta e agita le braccia "facendo il tifo" per il giocatore;
+* un omino che salta "facendo il tifo" per il giocatore;
 
 Inoltre fra gli ostacoli vi è un asteroide che ha una bassa probabilità di apparire rispetto agli altri ostacoli; esso farà il suo ingresso in scena cadendo dal cielo.
 
-## Considerazioni finali
+## screenshots e immagini del Progetto
+
 
 #### Fonti
-Movimento della macchina: https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_pointerlock.html Apllicazione delle texture sui vari oggetti: https://stackoverflow.com/questions/17418118/three-js-cube-with-different-texture-on-each-face
+Movimento della macchina: https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_pointerlock.html
+Applicazione delle texture sui vari oggetti: https://stackoverflow.com/questions/17418118/three-js-cube-with-different-texture-on-each-face
 
 # Modeling and rendering with boxes
 

@@ -1,7 +1,5 @@
 ## Da fare:
 
-### Prioritarie
-* Inserire nuovi ostacoli esterni alla strada (ALMENO 1-2)
 ### Secondarie
 * Sistemare i "fanali" alla macchina
 * Aggiungere nuovi ostacoli: pozzanghera (?)

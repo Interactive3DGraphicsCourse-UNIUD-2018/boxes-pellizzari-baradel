@@ -70,6 +70,8 @@ Dove *xDestra * 1,25* rappresenta un fattore di scala del movimento, mentre *piv
 * Modificato il cielo e aggiunti i fari alla macchina e inserito il tasto di "Nuova Partita" in caso di vittoria o game over;
 * Aggiunti i testi di vittoria e sconfitta;
 
+### Ultime modifiche al progetto e sistemazione del readme.md
+
 ### Sito delle Texture TEMP
 http://www.wildtextures.com/category/free-textures/
 
