@@ -1,0 +1,1012 @@
+<html>
+	<head>
+		<title>Progetto 3D 2018 - with lights and textures</title>
+		<style>
+
+		body {
+			font-family: Monospace;
+			background-color: #71b2cf;
+			margin: 0px;
+			overflow: hidden;
+		}
+
+		canvas {
+			width: 100%;
+			height: 100%;
+		}
+
+		.right {
+			position: absolute;
+			right: 0px;
+			width: 80px;
+		}
+
+	</style>
+		<script src="lib/three.min.js"></script>
+		<script src="lib/stats.min.js"></script>
+		<script src="lib/Coordinates.js"></script>
+		<script src="lib/OrbitControls.js"></script>
+	</head>
+	<body>
+		<div class="right", id="punteggio" > </div>
+
+		<div class="contenitore" id="contenitoreBottone" >
+			<button id="bottone" onclick="nuovaPartita()" >Nuova partita</button>
+		</div>
+
+		<script>
+
+		document.getElementById("contenitoreBottone").style.display = "none";  // elimino/nascondo l'elemento (bottone di fine partita) dalla scena
+
+		// VARIABILI PER LA CREAZIONE DELLA SCENA
+		var scene, camera, renderer, controls, stats, tabellaPunti, punti;
+		var pivotMacchina;  // pivot che contiene la macchina e la camera, così si muovono insieme
+		var yFineRuote;  // punto sull'asse y in cui iniziano le ruote
+		var punteggio = 0;  // variabile per tenere conto dei punti in base alla distanza percorsa
+		var lunghezzaStrada = 10000;
+		// VARIABILI PER LE ANIMAZIONI
+		var asteroidi = new Array();
+		var contatoreAsteroide = 0;
+		var numAsteroide = 0;
+		var mulini = new Array();
+		var posizioneZMulini = new Array();
+		var contatoreMulini = 0;
+		var numMulini = 0;
+		// VARIABILI PER IL MOVIMENTO DELLA MACCHINA
+		var xDestra, xSinistra;  // possibili valori della posizione x della macchina durante la partita (sulla strada)
+		var muoviDx, muoviSx;  // variabili booleane che servono per il movimento della macchina a destra e a sinistra
+		var spostamentoMacchinaZ = 0.7;  // quanto velocemente avanza la macchina verso -z
+		var spostamentoMacchinaX;  // quanto la macchina si sposta su x alla pressione dei tasti direzionali
+		var fasciaPosizioneMacchina = 0;  // quanto lontano si trova la macchina dall'origine
+		var offsetMacchinaZ = 1.75;  // distanza fra centro della macchina e fine delle ruote (su z)
+		var offsetMacchinaX = 0.75;  // distanza fra centro della macchina e fine della fiancata (su x)
+		var bottoneInserito = false;
+
+		// Variabile di rotazione della pivotCamera
+		var rotazioneAttuale = 0;
+
+		function Start() {
+			scene = new THREE.Scene();
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			pivotMacchina = new THREE.Object3D();
+
+			renderer = new THREE.WebGLRenderer( {antialias: true} );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setClearColor( 0x71b2cf );
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.gammaInput = true;
+			renderer.gammaOutput = true;
+			renderer.shadowMap.enabled = true;
+			document.body.appendChild( renderer.domElement );
+
+			camera.position.set(2,2,12);
+			camera.lookAt( new THREE.Vector3(0,0,0));
+
+			yFineRuote = inserisciMacchina();
+			pivotCamera = new THREE.Object3D();
+			pivotMacchina.add(pivotCamera);
+			pivotCamera.add(camera);
+			scene.add(pivotMacchina);
+
+			inserisciStrada();  // inserisco strada con gli ostacoli
+
+			pivotMacchina.position.x = scegliLato("interno");  // posiziono la macchina su uno dei due lati (a caso)
+			pivotMacchina.position.z = -(3 + 0.5)/2;  // posiziono la macchina all'inizio della strada (lunghezza macchina + lunghezza ruote)/2
+
+			// Aggiungo la luce emisferica
+			hemiLight = new THREE.HemisphereLight( 0xffffff, 0x0033ff, 0.3 );
+			hemiLight.color.setHSL( 0.6, 1, 0.6 );
+			hemiLight.position.set( 0, 500, 0 );
+			scene.add( hemiLight );
+
+			//Aggiunta Fanale
+			tempGeom = new THREE.BoxGeometry(0.1, 0.3, 0.2);
+			tempMat = new THREE.MeshBasicMaterial({color: "white"});
+			fanaleA = new THREE.Mesh(tempGeom, tempMat);
+			fanaleB = new THREE.Mesh(tempGeom, tempMat);
+
+ 			fanaleA.position.set(0.4, 0.2, -1.5);
+			fanaleB.position.set(-0.4, 0.2, -1.5);
+			pivotMacchina.add(fanaleA);
+			pivotMacchina.add(fanaleB);
+
+			pivotFanale = new THREE.Object3D();
+			pivotFanale.position.z = 0;
+			pivotMacchina.add(pivotFanale);
+
+			var fanale = new THREE.PointLight( 0xffffff, 5, 20 );
+			//fanale.position.set( 0, 0.9, -0.6 ); //(0, 0.9, -0.6) misure migliori;
+			fanale.position.set(0, 0.5, -1.5);
+			fanale.castShadow = true;
+			fanale.shadow.camera.near = 0.50;
+			pivotMacchina.add( fanale );
+			fanale.radius = 5;
+
+			stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.top = '0px';
+			document.body.appendChild( stats.domElement );
+
+			// Disegno gli assi cartesiani
+			Coordinates.drawAllAxes();
+
+			// Aggiungo i controlli
+			controls = new THREE.OrbitControls( camera );
+			controls.enableKeys = false;  // disabilito la tastiera, così posso giocare al minigioco senza spostare la camera quando premo le frecce
+			controls.addEventListener( 'change', Render );
+
+
+			/* Script per la pressione delle chiavi, sono state usate solo le chiavi
+			*  dei tasti dirazionali laterali (Destra, Sinistra, A, D);
+			*/
+			var onKeyDown = function ( event ) {
+				switch ( event.keyCode ) {
+					// se premo A oppure la freccia sinistra
+					case 37: // left
+					case 65: // a
+						muoviDx = false;
+						muoviSx = true;
+						break;
+					// se premo D oppure la freccia destra
+					case 39: // right
+					case 68: // d
+						muoviSx = false;
+						muoviDx = true;
+						break;
+				}
+			};
+
+			document.addEventListener( 'keydown', onKeyDown);
+
+			muoviSx = false;  // inizialmente tutti a false
+			muoviDx = false;
+
+			//Aggiunta Omini lungo il percorso
+			arrayOmini = new Array();
+			arrayVelOmini = new Array();
+			for (var i = 0; i < 83; i++){
+				var posizioneOminoZ = 75+(120*i);
+				aggiungiOmino(scegliLato()/2.5, -posizioneOminoZ);
+			}
+		}  // Start()
+
+
+
+		// FUNZIONI AUSILIARIE
+		function randomConRange(min, max){  // restituisce numeri x tali che: min <= x <= max
+			var range = (max - min) +1;
+			return (Math.floor(Math.random() * range) + min);
+		}
+
+		function deg(rad){
+			var gradi = rad * 180/Math.PI;
+			return gradi;
+		}
+
+		function rad(deg){
+			var radianti = deg * Math.PI/180;
+			return radianti;
+		}
+
+		// FUNZIONI PER COSTRUIRE LA MACCHINA
+		function inserisciMacchina(){
+			var altezzaMacchina = 1;
+			var lunghezzaMacchina = 3;
+			var geometriaMacchina = new THREE.BoxGeometry(1,altezzaMacchina,lunghezzaMacchina);
+			var coloreMacchina = new THREE.Color(Math.random() * 0xffffff);  // scelgo un colore a caso
+			var materialeMacchina = new THREE.MeshPhongMaterial( { color: coloreMacchina } );
+			var macchina = new THREE.Mesh( geometriaMacchina, materialeMacchina );
+
+			// Geometria e materiale Fuoco e pivot di riferimento
+			arrFuoco = new Array();
+			asseFuoco = new THREE.Object3D();
+
+			var particelle = 100;
+			for(var i = 0; i < particelle; i++){
+				var geometry = new THREE.BoxGeometry(0.2,0.2,0.2);
+				var material = new THREE.MeshPhongMaterial( {color: 0xff0000, transparent: true, opacity: 1} );
+				particellaFuoco = new THREE.Mesh(geometry, material);
+				arrFuoco[i] = particellaFuoco;
+				arrFuoco[i].position.y = i*(3/particelle);
+				arrFuoco[i].position.x = Math.random()*0.8 - 0.4;
+				asseFuoco.add(particellaFuoco);
+			}
+			// Modificando asseFuoco è possibile modificare interamente la struttura del fuoco;
+			pivotMacchina.add(asseFuoco);
+			asseFuoco.position.z = 1.55;
+			asseFuoco.position.y = -0.2;
+			asseFuoco.rotateX(Math.PI/2);
+			asseFuoco.scale.x = 0.8;
+
+			macchina.castShadow = true;
+			macchina.receiveShadow = true;
+			pivotMacchina.add(macchina);
+			inserisciTetto(geometriaMacchina, materialeMacchina);
+			// Inserisco le ruote
+			var dimensioneRuota = 0.5;
+			var verticiBassi = filtraVertici(geometriaMacchina.vertices, altezzaMacchina/2);
+			inserisciRuote(verticiBassi, dimensioneRuota);  // inserisco le quattro ruote nel pivotMacchina
+			// Calcolo la posizione del terreno in base a quella della macchina e delle ruote
+			var yFineRuote = -(altezzaMacchina/2 + dimensioneRuota);
+			return yFineRuote;
+		}
+
+		function inserisciTetto(geometriaMacchina, materialeMacchina){
+			var geometriaTetto = new THREE.BoxGeometry(geometriaMacchina.parameters.width, geometriaMacchina.parameters.height/2, geometriaMacchina.parameters.depth/1.5);
+			var tetto = new THREE.Mesh(geometriaTetto, materialeMacchina);
+			var yTetto = geometriaMacchina.parameters.height/2 + geometriaMacchina.parameters.height/4;
+			tetto.receiveShadow = true;
+			tetto.castShadow = true;
+			tetto.position.set(0, yTetto, 0);
+			pivotMacchina.add(tetto);
+			inserisciFinestrino(geometriaTetto, yTetto);
+		}
+
+		function inserisciFinestrino(geometriaTetto, yTetto){
+			var geometriaFinestrino = new THREE.BoxGeometry(geometriaTetto.parameters.width, geometriaTetto.parameters.height, 0.05);
+			var materialeFinestrino = new THREE.MeshPhongMaterial({color: "dodgerblue", opacity: 0.25, transparent: true });
+			var finestrino = new THREE.Mesh(geometriaFinestrino, materialeFinestrino);
+			var zFinestrino = -(geometriaTetto.parameters.depth/2 + 0.05);  // il finestrino e' a 0.05 dal tetto della macchina
+			finestrino.castShadow = true;
+			finestrino.receiveShadow = true;
+			finestrino.position.set(0, yTetto, zFinestrino);
+			pivotMacchina.add(finestrino);
+		}
+
+		function filtraVertici(vertici, yVertici){  // tengo solo i vertici inferiori del parallelepipedo che corrisponde alla macchina
+			var verticiFiltrati = new Array();
+			for(var i = 0; i < vertici.length; i++){
+					if(vertici[i].y < yVertici){
+						verticiFiltrati.push(new THREE.Vector3(vertici[i]));
+					}
+			}  // for
+			return verticiFiltrati;
+		}
+
+		function inserisciRuote(vertici, dimensioneRuota){
+			var geometriaRuote = new THREE.BoxGeometry(dimensioneRuota, dimensioneRuota, dimensioneRuota);
+			var materialeRuote = new THREE.MeshPhongMaterial({ color: "black" });
+			for(var j = 0; j < vertici.length; j++){
+				var ruota = new THREE.Mesh(geometriaRuote, materialeRuote);
+				ruota.receiveShadow = true;
+				ruota.castShadow = true;
+				ruota.position.set(vertici[j].x.x, vertici[j].x.y - dimensioneRuota/2, vertici[j].x.z);
+				pivotMacchina.add(ruota);
+			}
+		}
+		// FUNZIONI PER INSERIRE LA STRADA E GLI ALTRI OGGETTI (oltre alla macchina gia inserita)
+
+		function inserisciStrada(){
+			var altezzaStrada = 2;
+			var larghezzaStrada = 10;
+			xDestra = larghezzaStrada/4;  // il centro della metà della strada a dx dell'origine
+			xSinistra = -larghezzaStrada/4;  // il centro della metà della strada a sx dell'origine
+			var geometriaStrada = new THREE.BoxGeometry(larghezzaStrada, altezzaStrada, lunghezzaStrada);
+
+			var texture = THREE.ImageUtils.loadTexture('textures/asfalto.jpg');
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.wrapT = THREE.RepeatWrapping;
+			texture.repeat.set( 4, 2000 );
+
+			var materialeStrada = new THREE.MeshPhongMaterial({map: texture});
+			var strada = new THREE.Mesh(geometriaStrada, materialeStrada);
+			var yStrada = yFineRuote -(altezzaStrada/2 + 0.2);  // la strada e' 0.2 + in basso delle ruote
+			strada.position.set(0, yStrada, -(lunghezzaStrada/2));  // la strada parte dall'origine e va fino a z = -lunghezzaStrada
+			strada.castShadow = true;
+			strada.receiveShadow = true;
+			scene.add(strada);
+
+			aggiungiBloccoFine(altezzaStrada, yStrada, -lunghezzaStrada);
+			inserisciMezzeria(altezzaStrada, lunghezzaStrada, yStrada);
+			inserisciErba(larghezzaStrada, altezzaStrada, lunghezzaStrada, yStrada);
+			inserisciOstacoli(lunghezzaStrada);
+		}
+
+		function aggiungiBloccoFine(altezzaStrada, yStrada, z){
+			var geometriaBlocco = new THREE.BoxGeometry(70, altezzaStrada, 60);
+			var materialeBlocco = new THREE.MeshPhongMaterial({color: 0x824200});
+			var blocco = new THREE.Mesh(geometriaBlocco, materialeBlocco);
+			blocco.position.set(0, yStrada, z - 30 - 0.05);  // 30 = lunghezzaBlocco/2, 0.05 per staccarlo dalla strada
+			blocco.castShadow = true;
+			blocco.receiveShadow = true;
+			scene.add(blocco);
+		}
+
+		function inserisciMezzeria(altezzaStrada, lunghezzaStrada, yStrada){
+			var zPrimaRiga = -2.5;
+			var altezzaRiga = 0.01;
+			var lunghezzaRiga = 5;
+			var geometriaMezzeria = new THREE.BoxGeometry(1, altezzaRiga, lunghezzaRiga);
+			var materialeMezzeria = new THREE.MeshPhongMaterial({ color: "white"});
+			for(var i = 0; i < lunghezzaStrada/(2*lunghezzaRiga); i++){
+				var riga = new THREE.Mesh(geometriaMezzeria, materialeMezzeria);
+				riga.position.set(0, yStrada + altezzaStrada/2 + altezzaRiga/2 + 0.05, zPrimaRiga);  // le righe sono a 0.05 dalla strada (quindi a 0.05 anche dalle ruote)
+				riga.castShadow = true;
+				riga.receiveShadow = true;
+				scene.add(riga);
+				zPrimaRiga -= (2*lunghezzaRiga);
+			}
+		}
+
+		function aggiungiCartelloArrivo(x,z){
+			// Aggiungo i due pali esterni
+			var altezzaPalo = 6;
+			var lunghezzaPalo = 1;
+			var geometriaPalo = new THREE.BoxGeometry(lunghezzaPalo, altezzaPalo, lunghezzaPalo);
+			var materialePalo = new THREE.MeshPhongMaterial({ color:"brown"});
+			var palo1 = new THREE.Mesh(geometriaPalo, materialePalo);
+			var yPalo = yFineRuote + altezzaPalo/2 - 0.15;  // le ruote sono a 0.2 dalla strade quindi così i pali sono a 0.05 dalla strada
+			palo1.position.set(x, yPalo, z + lunghezzaPalo/2);
+			palo1.receiveShadow = true;
+			palo1.castShadow = true;
+			scene.add(palo1);
+			var palo2 = new THREE.Mesh(geometriaPalo, materialePalo);
+			palo2.position.set(-x, yPalo, z + lunghezzaPalo/2);
+			palo2.receiveShadow = true;
+			palo2.castShadow = true;
+			scene.add(palo2);
+			// Aggiungo il cartello centrale
+			aggiungiCartello(z + lunghezzaPalo/2, altezzaPalo, yPalo);
+		}
+
+		function aggiungiCartello(z, altezzaPalo, yPalo){
+			var texture = THREE.ImageUtils.loadTexture('textures/cartelloFinish.png');
+			var materials = [
+			   new THREE.MeshPhongMaterial({ color: "black" }),  // faccia a destra
+			   new THREE.MeshPhongMaterial({ color: "black" }),  // faccia a sinistra
+			   new THREE.MeshPhongMaterial({ color: "black" }),  // faccia in alto
+			   new THREE.MeshPhongMaterial({ color: "black" }),  // faccia in basso
+			   new THREE.MeshPhongMaterial({ map: texture }),  // faccia davanti, a cui devo apllicare la texture
+			   new THREE.MeshPhongMaterial({ color: "black" }) 	];
+			var geometriaCartello = new THREE.BoxGeometry(10, 4, 1);
+			var cartello = new THREE.Mesh(geometriaCartello, new THREE.MeshFaceMaterial(materials));
+			cartello.position.set(0, yPalo + altezzaPalo/2 + 2 + 0.05, z);  // + 2 = altezzaCartello/2, +0.05 per staccarlo dalla superficie dei pali
+			cartello.castShadow = true;
+			cartello.receiveShadow = true;
+			scene.add(cartello);
+		}
+
+		function inserisciErba(larghezzaStrada, altezzaStrada, lunghezzaStrada, yStrada){
+			var larghezzaErba = 30;
+			var geometriaErba = new THREE.BoxGeometry(larghezzaErba, altezzaStrada, lunghezzaStrada);
+			var texture = THREE.ImageUtils.loadTexture('textures/erba.jpg');
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.wrapT = THREE.RepeatWrapping;
+			texture.repeat.set( 10, 1500 );
+			var materialeErba = new THREE.MeshPhongMaterial({map: texture});
+			var erbaDestra = new THREE.Mesh(geometriaErba, materialeErba);
+			var erbaSinistra = new THREE.Mesh(geometriaErba, materialeErba);
+			var xErbaDestra = larghezzaStrada/2 + larghezzaErba/2 + 0.05;  // posiziono l'erba a lato della strada staccata di 0.05
+			erbaDestra.position.set(xErbaDestra, yStrada, -(lunghezzaStrada/2));
+			erbaSinistra.position.set(-xErbaDestra, yStrada, -(lunghezzaStrada/2));
+
+			erbaDestra.castShadow = true;
+			erbaDestra.receiveShadow = true;
+			erbaSinistra.castShadow = true;
+			erbaSinistra.receiveShadow = true;
+			scene.add(erbaDestra);
+			scene.add(erbaSinistra);
+		}
+
+		// VARIABILI CHE SERVONO PER LE COLLISIONI
+		gameOver = false; //Quando un ostacolo viene colpito, questa variabile diventa true e il gioco ha termine
+		spazioFraOstacoli = 50;
+		numeroOstacoli = (lunghezzaStrada/spazioFraOstacoli) -2;  // -2 perchè in posizione 0 e in fondo alla pista non metto ostacoli
+		posizioneOstacoli = new Array(); // Array per la gestione delle collisioni, ostacoli[i] = 1 (Destra), -1(Sinistra)
+		tipoOstacoli = new Array(); //Array per la gestione delle collisione, indica solo il tipo di ostacolo con le stringhe (es. "asteroide")
+
+		function inserisciOstacoli(lunghezzaStrada){
+		// Inserisco gli ostacoli sulla strada
+			for(var i = 1; i <= numeroOstacoli; i++){  // aggiungo un certo numero di ostacoli scelti a caso
+				var z = -(i * (spazioFraOstacoli));
+				var x = scegliLato("interno");
+				aggiungiOstacolo("interno", x, z);
+				posizioneOstacoli[i-1] = x;
+			}  // for
+			// Inserisco gli ostacoli fuori dalla strada
+			spazioFraOstacoli = 200;
+			numeroOstacoli = (lunghezzaStrada/spazioFraOstacoli) -2;
+			for(var i = 1; i <= numeroOstacoli; i++){  // aggiungo un certo numero di ostacoli scelti a caso
+				var z = -(i * (spazioFraOstacoli));
+				var x = scegliLato("esterno");
+				aggiungiOstacolo("esterno", x, z);
+			}  // for
+			// Aggiungo il cartello finale
+			aggiungiCartelloArrivo(4.5, -lunghezzaStrada);  // aggiungo in fondo il cartello di arrivo
+		}
+
+		function scegliLato(posizione){  // scelgo a caso se un oggetto deve stare a destra o a sinistra
+			var random = randomConRange(0,1);
+			if(posizione == "interno"){  // ostacoli interni
+				if(random == 0){
+					return xDestra;
+				} else {
+					return xSinistra;
+				}
+			} else {  // ostacoli esterni
+				if(random == 0){
+					return xDestra + 15;  // 15 = larghezzaErba/2
+				} else {
+					return xSinistra - 15;
+				}
+			}
+		}
+
+		function aggiungiOstacolo(posizione, x, z){
+			var tipoOstacolo = scegliOstacolo(posizione);
+			switch(tipoOstacolo){
+				case "tronco":
+					aggiungiTronco(x,z);
+					tipoOstacoli[(-z/50) - 1] = "tronco";
+					break;
+				case  "masso":
+					aggiungiMasso(x, z);
+					tipoOstacoli[(-z/50) - 1] = "masso";
+					break;
+				case "asteroide":
+					aggiungiAsteroide(x, z);
+					tipoOstacoli[(-z/50) - 1] = "asteroide";
+					break;
+				case "albero":
+					aggiungiAlbero(x, z);
+					break;
+				case "mulino":
+					aggiungiMulino(x, z);
+					break;
+			}
+		}
+
+		function scegliOstacolo(posizione){  // scelgo a caso un oggetto fra i possibili ostacoli
+			if(posizione == "interno"){  // ostacoli sulla strada
+				var random = randomConRange(1,100);
+				if(random <= 45){  // 45% tronco
+					return "tronco";
+				}else if(random > 45 && random <= 90) {  // 45% masso
+					return "masso";
+				}else{ // 10% asteroide
+					return "asteroide";
+				}
+			} else {  // ostacoli fuori dalla strada
+				var random = randomConRange(1,100);
+				if(random <= 60){  // 60% albero
+					return "albero";
+				}else if(random > 60){  // 40% mulino
+					return "mulino";
+				}
+			}
+		}
+
+		function aggiungiMasso(x,z){
+			var altezzaMasso = 2;
+			var geometriaMasso = new THREE.BoxGeometry(2,altezzaMasso,2);
+			var texture = THREE.ImageUtils.loadTexture('textures/masso.jpg');
+			var materialeMasso = new THREE.MeshPhongMaterial( { map: texture } );
+			var masso = new THREE.Mesh(geometriaMasso, materialeMasso);
+			masso.castShadow = true;
+			masso.receiveShadow = true;
+			masso.position.set(x,yFineRuote + altezzaMasso/2,z);
+			scene.add(masso);
+		}
+
+		function aggiungiTronco(x,z){
+			var geometriaTronco = new THREE.BoxGeometry(3,1,1);
+			var texture = THREE.ImageUtils.loadTexture('textures/tronco.jpg');
+			var materialeTronco = new THREE.MeshPhongMaterial( { map: texture } );
+			var tronco = new THREE.Mesh(geometriaTronco, materialeTronco);
+			tronco.castShadow = true;
+			tronco.receiveShadow = true;
+			tronco.position.set(x,yFineRuote + 0.5,z);  // +0.5 = + altezzaTronco/2 cosi ha la stessa y della macchina
+			scene.add(tronco);
+		}
+
+		function aggiungiAsteroide(x,z){
+			var geometriaAsteroide = new THREE.BoxGeometry(4,4,4);
+			var texture = THREE.ImageUtils.loadTexture('textures/asteroide.jpg');
+			var materialeAsteroide = new THREE.MeshPhongMaterial( { map: texture } );
+			var asteroide = new THREE.Mesh(geometriaAsteroide, materialeAsteroide);
+			asteroide.castShadow = true;
+			asteroide.receiveShadow = true;
+			asteroide.position.set(x,200,z);
+			asteroidi[contatoreAsteroide] = asteroide;  // inserisco l'asteroide nel vettore per le animazioni
+			contatoreAsteroide++;
+		}
+
+		function aggiungiAlbero(x, z){
+			var altezzaAlbero = 2;
+			var geometriaAlbero = new THREE.BoxGeometry(1, altezzaAlbero, 1);
+			var materialeAlbero = new THREE.MeshPhongMaterial({color:"brown"});
+			var tronco = new THREE.Mesh(geometriaAlbero, materialeAlbero);
+			tronco.position.set(x, yFineRuote + altezzaAlbero/2, z);
+			tronco.receiveShadow = true;
+			tronco.castShadow = true;
+			scene.add(tronco);
+			var dimensioneCuboPartenza = 3;
+			var y = yFineRuote + altezzaAlbero + 0.05;  // y di partenza per le "foglie"
+			aggiungiFoglie(dimensioneCuboPartenza, x, y, z);
+		}
+
+		function aggiungiFoglie(dim, x, y, z){
+			for(var i = 0; i < 4; i++){
+				var geometriaFoglie = new THREE.BoxGeometry(dim, dim, dim);
+				var materialeFoglie = new THREE.MeshPhongMaterial({color:"green"});
+				var foglie = new THREE.Mesh(geometriaFoglie, materialeFoglie);
+				foglie.position.set(x, y + dim/2, z);
+				foglie.receiveShadow = true;
+				foglie.castShadow = true;
+				scene.add(foglie);
+				y = y + dim;
+				dim = 2/3 * dim;
+			}
+		}
+
+		function aggiungiMulino(x, z){
+			var geometriaBase = new THREE.BoxGeometry(4, 2, 4);
+			var geometriaCorpo = new THREE.BoxGeometry(2.5, 6, 2.5);
+			var geometriaTesta = new THREE.BoxGeometry(2, 1, 1);
+			var geometriaPala = new THREE.BoxGeometry(0.1, 8, 0.6);
+			var geometriaPerno = new THREE.BoxGeometry(0.4, 0.4, 0.4);
+
+			var materialeBase = new THREE.MeshPhongMaterial({color: "grey"});
+			var materialeCorpo = new THREE.MeshPhongMaterial({color: "brown"});
+			var materialeTesta = new THREE.MeshPhongMaterial({color: "chocolate"});
+			var materialePala = new THREE.MeshPhongMaterial({color: "white"});
+			var materialePerno = new THREE.MeshPhongMaterial({color: "brown"});
+
+			var base = new THREE.Mesh(geometriaBase, materialeBase);
+			base.castShadow = true;
+			base.receiveShadow = true;
+			var corpo = new THREE.Mesh(geometriaCorpo, materialeCorpo);
+			corpo.castShadow = true;
+			corpo.receiveShadow = true;
+			var testa = new THREE.Mesh(geometriaTesta, materialeTesta);
+			testa.castShadow = true;
+			testa.receiveShadow = true;
+			var palaA = new THREE.Mesh(geometriaPala, materialePala);
+			palaA.castShadow = true;
+			palaA.receiveShadow = true;
+			var palaB = new THREE.Mesh(geometriaPala, materialePala);
+			palaB.castShadow = true;
+			palaB.receiveShadow = true;
+			var perno = new THREE.Mesh(geometriaPerno, materialePerno);
+			perno.castShadow = true;
+			perno.receiveShadow = true;
+
+			pivotPerno = new THREE.Object3D();
+			pivotMulino = new THREE.Object3D();
+
+			corpo.position.y = yFineRuote + 2 +3; // 2 = altezzaBase, 3 = altezzaCorpo/2
+			palaB.rotateX(90*Math.PI/180);
+			if(x < 0){  // siamo a sinistra
+				testa.position.set(0.5, corpo.position.y +3, 0);
+				pivotPerno.position.set(1.7, testa.position.y, 0);
+			}else if(x > 0){  // siamo a destra
+				testa.position.set(-0.5, corpo.position.y +3, 0);
+				pivotPerno.position.set(-1.7, testa.position.y, 0);
+			}
+
+			pivotMulino.add(base);
+			pivotMulino.add(corpo);
+			pivotMulino.add(testa);
+
+			pivotPerno.add(palaA);
+			pivotPerno.add(palaB);
+			pivotPerno.add(perno);
+
+			pivotMulino.add(pivotPerno);
+			pivotMulino.position.x = x / 1.3;
+			pivotMulino.position.z = z;
+
+			posizioneZMulini[contatoreMulini] = z;
+			mulini[contatoreMulini] = pivotPerno;  // inserisco il perno nel vettore per le animazioni
+			contatoreMulini++;
+
+			scene.add(pivotMulino);
+		}
+
+		function aggiungiOmino(x, z){
+			var geometriaCorpo = new THREE.BoxGeometry(0.5, 1, 0.3);
+			var geometriaTesta = new THREE.BoxGeometry(0.25, 0.3, 0.25);
+			var geometriaArto = new THREE.BoxGeometry(0.1, 0.6, 0.1);
+
+			var materialeCorpo = new THREE.MeshPhongMaterial({color: "green"});
+			var materialeTesta = new THREE.MeshPhongMaterial({color: "pink"});
+			var materialeArto = new THREE.MeshPhongMaterial({color: "pink"});
+
+			var corpo = new THREE.Mesh(geometriaCorpo, materialeCorpo);
+			corpo.castShadow = true;
+			corpo.receiveShadow = true;
+			var testa = new THREE.Mesh(geometriaTesta, materialeTesta);
+			testa.castShadow = true;
+			testa.receiveShadow = true;
+			braccioA = new THREE.Mesh(geometriaArto, materialeArto);
+			braccioA.castShadow = true;
+			braccioA.receiveShadow = true;
+			braccioB = new THREE.Mesh(geometriaArto, materialeArto);
+			braccioB.castShadow = true;
+			braccioB.receiveShadow = true;
+			var gambaA = new THREE.Mesh(geometriaArto, materialeArto);
+			gambaA.castShadow = true;
+			gambaA.receiveShadow = true;
+			var gambaB = new THREE.Mesh(geometriaArto, materialeArto);
+			gambaB.castShadow = true;
+			gambaB.receiveShadow = true;
+
+			pivotBraccioA = new THREE.Object3D();
+			pivotBraccioB = new THREE.Object3D();
+			pivotOmino = new THREE.Object3D();
+
+			corpo.position.y = 0.75;
+			pivotOmino.add(corpo);
+			testa.position.y = 1.35;
+			pivotOmino.add(testa);
+			gambaA.position.x = 0.125;
+			gambaB.position.x = -0.125;
+			pivotOmino.add(gambaA);
+			pivotOmino.add(gambaB);
+
+			pivotBraccioA.position.y = 1.3;
+			braccioA.position.set(0.4, 0, 0);
+			braccioA.rotateZ(-40*Math.PI/180);
+
+			pivotBraccioB.position.y = 1.3;
+			braccioB.position.set(-0.4, 0, 0);
+			braccioB.rotateZ(40*Math.PI/180);
+			pivotBraccioA.add(braccioA);
+			pivotBraccioB.add(braccioB);
+
+			pivotOmino.add(pivotBraccioA);
+			pivotOmino.add(pivotBraccioB);
+			scene.add(pivotOmino);
+
+			//Aggiustamenti omino
+			pivotOmino.scale.x = 1.6;
+			pivotOmino.scale.y = 1.6;
+			pivotOmino.scale.z = 1.6;
+			pivotOmino.position.set(x, -0.8, z);
+
+			velocitaOmino = 0.25; // Variabile per il salto
+			gravita = 0.015; // Variabile di gravita per migliorare il salto
+
+			arrayOmini.push(pivotOmino);
+			arrayVelOmini.push(velocitaOmino);
+		}
+
+		function aggiornaOmini(){
+			for(var i = 0; i <arrayOmini.length; i++){
+				if(-pivotMacchina.position.z + 50 > -arrayOmini[i].position.z){ //&& -pivotMacchina.position.z - 50 < -arrayOmini[i].position.z)
+					//Salto
+					if(arrayOmini[i].position.y <= -0.8){
+						arrayVelOmini[i] = 0.25;
+					}
+					arrayOmini[i].position.y += arrayVelOmini[i];
+					arrayVelOmini[i] -= gravita;
+				 }
+			}
+		}
+		// FUNZIONI PER IL MOVIMENTO DELLA MACCHINA (con eventuali funzioni ausiliarie
+
+		function scegliSpostamentoMacchina(posizioneZMacchina){
+			if(posizioneZMacchina < -(10000 + offsetMacchinaZ)){ // se arrivo alla fine
+				spostamentoMacchinaZ = 0;  // fermo la macchina
+			}else if(posizioneZMacchina <= fasciaPosizioneMacchina){  // quando raggiungo la fascia successiva
+				fasciaPosizioneMacchina -= 250;  // incremento il valore della fascia
+				spostamentoMacchinaZ += 0.04;  // incremento la "velocita" della macchina
+				spostamentoMacchinaX = 0.05;
+			}
+		}
+
+		function muoviMacchinaDx(pivotMacchina){
+			if(pivotMacchina.position.x + spostamentoMacchinaX > xDestra){  // se superassi il limite destro non consento il movimento
+				muoviDx = false;
+				pivotMacchina.position.x = xDestra;
+			}else{  // se sono ancora nel range di movimento valido
+				pivotMacchina.position.x += spostamentoMacchinaX*(xDestra*1.25 - pivotMacchina.position.x); // Movimento della macchina su X piu' fluido
+			}
+		}
+
+		function muoviMacchinaSx(pivotMacchina){
+			if(pivotMacchina.position.x - spostamentoMacchinaX < xSinistra){ // se superassi il limite sinistro non consento il movimento
+				muoviSx = false;
+					pivotMacchina.position.x = xSinistra;
+				}else{  // se sono ancora nel range di movimento valido
+					pivotMacchina.position.x -= spostamentoMacchinaX*(xDestra*1.25 + pivotMacchina.position.x); // Movimento della macchina su X piu' fluido
+				}
+		}
+
+		// FUNZIONI PER GESTIRE LE COLLISIONI
+
+		// Controlla se la macchina collide con un bersaglio, in caso affermativo
+		// cambia il valore di gameOver a true e la partita termina
+		function controllaCollisioni(){
+			// controllo con il prossimo ostacolo, ovvero con il primo ostacolo che si trova + avanti della macchina
+			var i = Math.floor(-pivotMacchina.position.z/50);
+			var posOstacoloZ = (50*(i+1));
+			var distanzaZ = calcolaDistanzaZ(i); // Meta' della "lunghezza" dell'ostacolo
+			var distanzaX = calcolaDistanzaX(i); // Meta' della "larghezza" dell'ostacolo
+			if(collisioneAsseZ("avanti", posOstacoloZ, offsetMacchinaZ, distanzaZ) && collisioneAsseX(i, offsetMacchinaX, distanzaX)){
+				gameOver = true;
+			}  // altrimenti gameOver = false (valore assegnato all'inizio, quindi rimane inalterato)
+
+			// controllo anche con l'ostacolo "precedente" (la macchina potrebbe aver superato di poco un ostacolo ma potrebbe ancora colpirlo)
+			i--;  // prendo l'indice dell'ostacolo precedente
+			if(i >= 0){  // se ha senso
+				var posOstacoloZ = (50*(i+1));
+				var distanzaZ = calcolaDistanzaZ(i); // Meta' della "lunghezza" dell'ostacolo
+				var distanzaX = calcolaDistanzaX(i); // Meta' della "larghezza" dell'ostacolo
+				if(collisioneAsseZ("indietro", posOstacoloZ, offsetMacchinaZ, distanzaZ) && collisioneAsseX(i, offsetMacchinaX, distanzaX)){
+					gameOver = true;
+				}  // altrimenti gameOver = false (valore assegnato all'inizio, quindi rimane inalterato)
+			}
+		}
+
+		// Funzione per calcolare la misura su X dell'oggetto, in modo da coprire l'intera superfice;
+		function calcolaDistanzaX(i){
+			switch(tipoOstacoli[i]){
+				case "tronco":
+					return 1.5;
+				case "masso":
+					return 1;
+			  case "asteroide":
+					return 2;
+			}
+		}
+
+		// Controlla che ci sia collisione sull'asse delle X
+		function collisioneAsseX(i, offsetMacchinaX, distanzaX){
+			if(posizioneOstacoli[i] > 0){ // Se l'ostacolo si trova a destra
+				if((pivotMacchina.position.x + offsetMacchinaX) >= (posizioneOstacoli[i] - distanzaX)){
+					return true;
+				}else{
+					return false;
+				}
+			}else{ // Se l'ostacolo si trova a sinistra
+				if((pivotMacchina.position.x - offsetMacchinaX) <= (posizioneOstacoli[i] + distanzaX)){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}
+
+		// Funzione per calcolare metà la distanza dell'oggetto, in modo da coprire l'intera superfice;
+		function calcolaDistanzaZ(i){
+			switch(tipoOstacoli[i]){
+				case "tronco":
+					return 0.5;
+					case "masso":
+					return 1;
+					case "asteroide":
+					return 2;
+			}
+		}
+
+		// Controlla se la faccia della macchina passata come argomento collide, sull'asse Z, con l'ostacolo
+		function collisioneAsseZ(faccia, posOstacoloZ, offsetMacchinaZ, distanzaZ){
+			if(faccia == "avanti"){
+				var facciaAvanti = -pivotMacchina.position.z + offsetMacchinaZ;
+				var collisioneAvanti = collisioneAvantiAsseZ(facciaAvanti, posOstacoloZ, distanzaZ);
+				return collisioneAvanti;
+			}else if(faccia == "indietro"){
+				var facciaDietro = -pivotMacchina.position.z - offsetMacchinaZ;
+				var collisioneIndietro = collisioneDietroAsseZ(facciaDietro, posOstacoloZ, distanzaZ);
+				return collisioneIndietro;
+			}
+		}
+
+		function collisioneAvantiAsseZ(facciaAvanti, posOstacoloZ, distanzaZ){
+			var facciaAvantiOstacolo = posOstacoloZ - distanzaZ;
+			var facciaDietroOstacolo = posOstacoloZ + distanzaZ;
+			if(facciaAvanti <= facciaDietroOstacolo   //  parte davanti della macchina non ha ancora superato la faccia dietro dell'oggetto AND...
+					&& facciaAvanti >= facciaAvantiOstacolo){  // parte davanti della macchina ha "superato" la faccia avanti dell'oggetto
+				return true;
+			}else{
+				return false;
+			}
+		}
+
+		function collisioneDietroAsseZ(facciaDietro, posOstacoloZ, distanzaZ){
+			var facciaAvantiOstacolo = posOstacoloZ - distanzaZ;
+			var facciaDietroOstacolo = posOstacoloZ + distanzaZ;
+			if(facciaDietro <= facciaDietroOstacolo   //  parte dietro della macchina non ha ancora superato la faccia dietro dell'oggetto AND...
+					&& facciaDietro >= facciaAvantiOstacolo){  // parte dietro della macchina ha "superato" la faccia avanti dell'oggetto
+				return true;
+			}else{
+				return false;
+			}
+		}
+		// FUNZIONI PER LE ANIMAZIONI E PER IL PUNTEGGIO
+		function aggiornaFuoco(arrFuoco){
+			for(var i = 0; i < arrFuoco.length; i++){
+				if(arrFuoco[i].position.y < 3 && !gameOver){
+					arrFuoco[i].position.y += 0.06; //Sposta il cubo su y rispetto a asseFuoco;
+					arrFuoco[i].position.x *= 0.97; //Fa convergere il flusso vero il centro di asseFuoco;
+					arrFuoco[i].scale.x = arrFuoco[i].scale.x*0.95; //Scala il cubo su x, y e z dello stesso fattore;
+					arrFuoco[i].scale.y = arrFuoco[i].scale.y*0.95;
+					arrFuoco[i].scale.z = arrFuoco[i].scale.z*0.95;
+					arrFuoco[i].material.color.g += 0.06; //Varia il colore in modo che passi da rosso a giallo;
+					arrFuoco[i].material.opacity -= 0.03;
+				}else{
+					if(!gameOver && punteggio < 10000){
+						arrFuoco[i].position.x = Math.random() - 0.5; //Scelgo una nuova posizione su X casuale per il cubo;
+						// Queste procedure resettano i cubetti allo stato iniziale;
+						arrFuoco[i].position.y = 0;
+						arrFuoco[i].scale.x = 1;
+						arrFuoco[i].scale.y = 1;
+						arrFuoco[i].scale.z = 1;
+						arrFuoco[i].material.color.g = 0;
+						arrFuoco[i].material.opacity = 1;
+					}else{ // Nel caso di gameOver rimuovo le particelle del fuoco;
+						pivotMacchina.remove(asseFuoco);
+					}
+				}
+			}
+		}
+
+		function controllaAsteroide(){
+			if(numAsteroide < contatoreAsteroide){
+				var distanzaZ = Math.abs(asteroidi[numAsteroide].position.z - pivotMacchina.position.z);
+				var distanzaApparizione = 150 + Math.abs(pivotMacchina.position.z/50);
+				if(distanzaZ < distanzaApparizione){  // se l'asteroide e' + distante di distanzaApparizione non faccio niente
+					scene.add(asteroidi[numAsteroide]);
+					animaAsteroide(distanzaZ);
+				}
+			}
+		}
+
+		function animaAsteroide(distanzaZ){
+			var posizioneMinima = yFineRuote + 2;
+			var distanzaY = asteroidi[numAsteroide].position.y - posizioneMinima;  // distanza che l'asteroide deve percorrere su y
+			var velocitaDiscesa = calcolaVelocitaDiscesa(distanzaZ, distanzaY);
+			asteroidi[numAsteroide].position.y -= velocitaDiscesa;
+			if(asteroidi[numAsteroide].position.y <= posizioneMinima){  // se scende troppo
+				asteroidi[numAsteroide].position.y  = posizioneMinima;
+				numAsteroide++;
+			}
+		}
+
+		function calcolaVelocitaDiscesa(distanzaZ, distanzaY){
+			var numeroFrameDistanzaZ = 	distanzaZ/2*spostamentoMacchinaZ;  // in quanti frame la macchina percorre distanzaZ
+			var velocita = distanzaY/numeroFrameDistanzaZ;
+			return velocita;
+		}
+
+		function controllaMulino(){
+			if(numMulini < contatoreMulini){  // se ci sono ancora mulini in scena
+				var distanzaMacchMul = Math.abs(posizioneZMulini[numMulini] - pivotMacchina.position.z);
+				var distanzaInizioAnimazione = 250 + Math.abs(pivotMacchina.position.z/50);
+				var distanzaFineAnimazione = Math.abs(pivotMacchina.position.z/75) - 5;
+				console.log(distanzaMacchMul + " " + distanzaInizioAnimazione + " " + distanzaFineAnimazione);
+				if(distanzaFineAnimazione < distanzaMacchMul && distanzaMacchMul < distanzaInizioAnimazione){  // se sono abbastanza vicino ad un mulino inizio l'animazione
+					animaMulino();
+					console.log("Sto animando il mulino " + numMulini);
+				}else if(distanzaFineAnimazione > distanzaMacchMul){  // se sono troppo vicino fermo l'animazione e passo al mulino successivo
+					numMulini++;
+					console.log("Passo al mulino " + numMulini);
+				}
+				// se sono troppo lontano dal mulino non faccio niente finche non mi avvicino abbastanza per poter vedere l'animazione
+			}
+		}
+
+		function animaMulino(){
+			mulini[numMulini].rotateX(0.05);
+		}
+
+		function rotateCamera(){
+			if(rotazioneAttuale < rad(360)){ // Se la camera non ha compiuto un giro intorno alla macchina
+				rotazioneAttuale += 0.01;
+				pivotCamera.rotateY(0.01);
+			}
+		}
+
+		function stampaPunteggio(){
+			var node = document.getElementById("punteggio");
+			node.innerHTML = "Punteggio:" + "<br/>" + punteggio;
+		}
+
+		function nuovaPartita() {
+			location.reload();
+		}
+
+		function controllaBottone(){
+			if(!bottoneInserito){
+				stampaTestoFinale();
+				document.getElementById("contenitoreBottone").style.display = "inline";  // inserisco il bottone nel documento
+				document.getElementById("contenitoreBottone").style="text-align:center;";  // lo posiziono al centro
+				bottoneInserito = true;
+			}
+		}
+
+		function stampaTestoFinale(){
+			if(gameOver){
+				var materialeTesto = new THREE.MeshPhongMaterial( {color: "red"} );
+				stampaTesto("Hai perso!", materialeTesto);
+			}else{
+				var materialeTesto = new THREE.MeshPhongMaterial( {color: "red"} );
+				stampaTesto("Hai vinto!", materialeTesto);
+			}
+		}
+
+		function stampaTesto(testo, materialeTesto){
+			var fontLoader = new THREE.FontLoader();
+
+			fontLoader.load('font/helvetiker_bold.typeface.json', function(font) {
+				var geometriaTesto = new THREE.TextGeometry(testo, {
+					font: font,
+					size: 3,
+					height: 0.5,
+					curveSegments: 10
+				});
+
+				geometriaTesto.computeBoundingBox();
+				var testoFinale = new THREE.Mesh(geometriaTesto, materialeTesto);
+				testoFinale.castShadow = true;
+				testoFinale.receiveShadow = true;
+				testoFinale.position.set(-10, pivotMacchina.position.y + 4, pivotMacchina.position.z - 2);
+				scene.add(testoFinale);
+
+			});
+		}
+
+		function animaScena(){
+			// AGGIORNO IL FUOCO
+			aggiornaFuoco(arrFuoco);
+			aggiornaOmini();
+			if(!gameOver){
+				// ANIMO GLI EVENTUALI ASTEROIDI
+				controllaAsteroide();
+				// ANIMA MULINO
+				controllaMulino();
+				// VERIFICO CHE NON CI SIANO COLLISIONI
+				controllaCollisioni();
+				// CALCOLO LO SPOSTAMENTO CHE DOVREBBE FARE LA MACCHINA
+				scegliSpostamentoMacchina(pivotMacchina.position.z);  // in base alla posizione della macchina...
+				if(!gameOver){
+					pivotMacchina.position.z -= spostamentoMacchinaZ;  // imposto la sua velocità
+				}
+				// IN BASE AI TASTI PREMUTI VADO AVANTI (se non si verifica il gameOver)
+				if(muoviSx){
+					muoviMacchinaSx(pivotMacchina);
+				}
+				if(muoviDx){
+					muoviMacchinaDx(pivotMacchina);
+				}
+				// ALL'ARRIVO, SE VINCO FACCIO RUOTARE LA TELECAMERA ATTORNO ALLA MACCHINA E INSERISCO IL BOTTONE DI NUOVA PARTITA
+				if(pivotMacchina.position.z < -10000){
+					rotateCamera();
+					controllaBottone();
+				}
+			}else{  // gameOver
+				// FACCIO RUOTARE LA TELECAMERA ATTORNO ALLA MACCHINA E INSERISCO IL BOTTONE DI NUOVA PARTITA
+				rotateCamera();
+				controllaBottone();
+			}
+
+			// CALCOLO E STAMPO IL PUNTEGGIO
+			punteggio = Math.floor(Math.abs(pivotMacchina.position.z));
+			if(punteggio >= 10000){  // non puo superare i 10000
+				punteggio = 10000;
+			}
+			stampaPunteggio();
+
+		}
+
+		// UPDATE E CICLO DI RENDER
+
+		function Update() {
+			requestAnimationFrame( Update );
+			controls.update();
+			stats.update();
+			Render();
+		}
+
+		function Render() {
+			animaScena();
+			renderer.render(scene, camera);
+		}
+
+		Start();
+		Update();
+
+		</script>
+	</body>
+</html>

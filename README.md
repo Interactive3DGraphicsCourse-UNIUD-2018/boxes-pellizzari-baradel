@@ -1,3 +1,64 @@
+# Interactive 3DGraphics / Pellizzari-Baradel-Project
+Primo progetto per il corso di Interactive 3D Graphics, anno accademico 2017/2018
+
+## Descrizione del Progetto
+Il progetto consiste in una web-app di un gioco di simulazione di guida. In questa applicazione l'utente potrà controllare un veicolo con lo scopo di raggiungere il traguardo cercando di evitare gli ostacoli, generati casualmente.
+I comandi disponibili sono quelli di movimenti laterale (Freccia Sinistra, Freccia Destra), oppure le lettere *A e D* (dai tasti *WASD*).
+
+Durante il gioco esiste una variabile punteggio che corrisponde alla distanza percorsa dall'inizio della partita; anche la velocità della macchina dipende dalla distanza percorsa, in particolare questa aumenta di un certo fattore ogni 250 unità di spazio per rendere il gioco più difficile.
+
+Abbiamo inserito nella scena gli Orbit Controls in modo che l'utente durante la partita possa effettuare lo zoom in/out e spostarsi con il mouse per inquadrare la macchina da un'altra angolazione (rispetto a quella che abbiamo impostato di default all'inizio) in modo da aumentare la giocabilità e poter osservare la scena dai vari punti di vista. Abbiamo dovuto disabilitare la possibilità di usare questi controlli dalla tastiera con il metodo: controls.enableKeys = false; altrimenti ogni volta che si usano le frecce per schivare gli ostacoli queste hanno l'effetto di spostare l'inquadratura, di conseguenza è difficile capire se la macchina si sia veramente spostata oppure se sia semplicemente cambiata l'angolazione della camera.
+
+## Risultato del Progetto
+### Generazione degli ostacoli e decorazioni
+Dopo la costruzione della scena di base, gli ostacoli vengono inseriti casualmente in base alla distanza fra ostacoli seguenti grazie alla funzione
+```
+function scegliLato(posizione){
+	var random = randomConRange(0,1); //Ritorna un numero casuale intero fra 0 e 1;
+	if(posizione == "interno"){       //La posizione "esterno" invece indica un "ostacolo" esterno alla strada, ossia una decorazione
+	 if(random == 0){
+	  return xDestra;                 //Posizione centrale della corsia di destra, centro dell'ostacolo
+   } else {
+	  return xSinistra;               //Posizione centrale della corsia di sinistra, centro dell'ostacolo
+   }
+   [...]
+```
+Le decorazioni invece sono state inserite analogamente agli ostacoli, però la funzione *scegliLato(posizione)* viene chiamata con
+```
+posizione = "esterno";
+scegliLato("esterno");
+```
+Ogni ostacolo viene aggiunto dalla funzione *aggiungiOstacolo(posizione, x, z)* dove posizone è sempre una stringa "interno" o "esterno", x rappresenta la coordinata x del centro dell'ostacolo mentre z rappresenta la distanza su Z dall'origine.
+
+### Gestione delle collisioni
+Durante la creazione degli ostacoli vengono aggiornati due array dichiarati globalmente, *posizioneOstacoli* e *tipoOstacoli*.
+*posizioneOstacoli* è un array di interi che serve solamente a determinare se l'ostacolo in posizione *(i+1)*50* da Z è a destra o sinistra inserendo rispettivamente un numero maggiore o minore di zero.
+
+*tipoOstacoli* è un array di stringhe dove viene specificato il tipo di ostacolo alla distanza *(i+1)*50* da Z. Questo serva a determinare al momento del controllo delle collisioni l'area occupata dall'ostacolo;
+
+Grazie a questi due array è possibile controllare le collisioni ad ogni iterazione della ricorsione della funzione Render(), in quanto viene chiamata la funzione *controllaCollisioni()* che ha il compito di verificare che la posizione attuale di tutti i vertici della macchina non coincida o sia compresa in nessun ostacolo sulla pista, in caso contrario la variabile globale *gameOver* viene impostata a *true* e il gioco termina.
+
+### Animazione delle decorazioni e degli asteroidi
+Si è scelto di creare un paesaggio nella scena in modo da rendere più interessante il tragitto, anche gli ostacoli "esterni" (quindi le decorazioni) sono inseriti casualmente, le decorazioni sono:
+* un semplice albero;
+* un mulino le cui pale ruotano quando la macchina si avvicina;
+* un omino che salta "facendo il tifo" per il giocatore;
+
+Inoltre fra gli ostacoli vi è un asteroide che ha una bassa probabilità di apparire rispetto agli altri ostacoli; esso farà il suo ingresso in scena cadendo dal cielo.
+
+## screenshots e immagini del Progetto
+
+![Screenshot1](/Screenshots/Screenshot1.jpg)
+![Screenshot2](/Screenshots/Screenshot2.jpg)
+![Screenshot3](/Screenshots/Screenshot3.jpg)
+![Screenshot4](/Screenshots/Screenshot4.jpg)
+
+
+#### Fonti
+Movimento della macchina: https://github.com/mrdoob/three.js/blob/master/examples/misc_controls_pointerlock.html
+Applicazione delle texture sui vari oggetti: https://stackoverflow.com/questions/17418118/three-js-cube-with-different-texture-on-each-face
+Texture: http://www.wildtextures.com/category/free-textures/
+
 # Modeling and rendering with boxes
 
 ![Image from Minecraft](https://jordanweagly.files.wordpress.com/2012/02/figure_4.png)
@@ -17,11 +78,11 @@
 - Try to work out a basic project which satisfies all requirements well before the deadline and as soon as possible: you will then use the remaining time to refine, improve and polish.
 - If you are stuck for too much time on a problem, ask for help, preferably in the forum.
 - the process is as important as the result. Use this project to learn a workflow, and how to use tools effectively. Experiment, and try to come up with efficient, elegant, and well commented code.
-- commit often in your git repository and with meaningful comments. 
+- commit often in your git repository and with meaningful comments.
 
-## Goals 
+## Goals
 In this project you'll first create an interesting scene of your own design, made up just of boxes. The boxes can be
-translated, scaled and rotated as you wish. For inspiration, look at [Minecraft](https://minecraft.net/en-us/), 
+translated, scaled and rotated as you wish. For inspiration, look at [Minecraft](https://minecraft.net/en-us/),
 Legos, and voxel-based games such as [Crossy Road](http://www.crossyroad.com).
 
 I am not expecting something highly complex, but I expect something **interesting** and that you use **at least 30 boxes**.
@@ -36,22 +97,22 @@ form of a greyscale image as input;
 - alternatively, you can choose to create a short movie that presents your scene.
 
 In either case, see the next sections for more detailed instructions and suggestions. You are also required to document your
-work and write a final report, as detailed below. 
+work and write a final report, as detailed below.
 
 ## Starting code
 
-I have provided two starting scenes, one without lights and textures, and one which includes a basic lighting setup 
-and an example of texture usage. Your final result should be obtained by modifiying ONE of these files. 
+I have provided two starting scenes, one without lights and textures, and one which includes a basic lighting setup
+and an example of texture usage. Your final result should be obtained by modifiying ONE of these files.
 
 Choose the one you prefer based on the kind of result you want to obtain, and how much you want to experiment with features we haven't yet explained in our lectures. You are free to do any modifications, including replacing my code, e.g. to use an orthographic camera instead of a perspective one.
 
-For the box materials, without lights you can use MeshBasicMaterial for solid, textured, or wireframe rendering. 
+For the box materials, without lights you can use MeshBasicMaterial for solid, textured, or wireframe rendering.
 
 When using lights, it is better to use MeshPhongMaterial for the boxes. The example also includes some code to render shadows; if you like the effect, you'll need to write similar code for all the boxes you will insert, or you can remove it entirely for rendering without shadows.
 
 The third starting code file is necessary only if you choose to create a terrain. It loads a *m by n* PNG image from a file and builds an array of *m x n* values where each value is a greyscale value in the range 0-255. The code assumes that the image is composed by four channels (RGBA) and the value of the three RGB channel is the same. If you use another kind of image, you will have to modify the code accordingly.
 
-## Steps 
+## Steps
 
 1. clone the starting code in the repository.
 2. examine the starting code carefully. In the case of the code which uses lights, we are using stuff that has not been explained in the course yet. However, with some help from the [three.js documentation](https://threejs.org/docs/index.html#Manual/Introduction/Creating_a_scene), it should not be too hard to figure out what each line does. Try to play with the code and modify values, and gain some understanding by observing the result of your changes. Often, we don't need to fully understand how code really function, or the underlying theory.
@@ -67,8 +128,8 @@ The third starting code file is necessary only if you choose to create a terrain
 
 ### Adding a terrain
 
-The code in StartingCode-heightmap loads a greyscale image from a file and creates and array of the same m x n size of the image, where the value in each cell ranges from 1 (black) to 63,75 (white). 
-Write a function that takes this array, and creates a grid of boxes on the XZ plane, where the scaling and translation in Y for each box is proportional to the value read in the array, meaning that you should choose a proportionality factor that makes the terrain look good. In other words, you are treating the image as an **heightmap**, where the greyscale value corresponds to the height of the corresponding point. 
+The code in StartingCode-heightmap loads a greyscale image from a file and creates and array of the same m x n size of the image, where the value in each cell ranges from 1 (black) to 63,75 (white).
+Write a function that takes this array, and creates a grid of boxes on the XZ plane, where the scaling and translation in Y for each box is proportional to the value read in the array, meaning that you should choose a proportionality factor that makes the terrain look good. In other words, you are treating the image as an **heightmap**, where the greyscale value corresponds to the height of the corresponding point.
 
 You can also choose the box color or texture based on the heightmap value, e.g. white color for high values (snow), grey color for medium values (rocks), green color for lower values (grass), but this is just an example.
 
@@ -76,7 +137,7 @@ You can also choose the box color or texture based on the heightmap value, e.g. 
 
 Remove the code for orbiting the camera with the mouse and plan camera movements (e.g., pan, arcing, traveling) and cuts. In the Update function, using the Date.now() Javascript function (that returns the number of milliseconds elapsed since 1 January 1970 00:00:00 UTC) you can check how much time is passed since the application started and then activate the correct camera animation.
 
-For producing the movie, you can use some screen capture application, and then, if you want, you can use video editing software to apply post effects, transitions, and color correction.	
+For producing the movie, you can use some screen capture application, and then, if you want, you can use video editing software to apply post effects, transitions, and color correction.
 
 ## Documenting and report
 
@@ -97,7 +158,7 @@ The report should be as brief as possible while covering the following points:
 
 ## Constraints
 
-If you use textures, please make sure that you have the rights to include them. For example, search for images that come with a [CC Attribution, ShareAlike or NonCommercial licences](https://creativecommons.org/share-your-work/licensing-types-examples/). 
+If you use textures, please make sure that you have the rights to include them. For example, search for images that come with a [CC Attribution, ShareAlike or NonCommercial licences](https://creativecommons.org/share-your-work/licensing-types-examples/).
 
 You are allowed to take inspiration, or create models that reproduce what you see in images on the internet, but copying others' work, even with slight modifications, is forbidden and will have serious consequences beyond the deletion of your project. In any case, mention any source of inspiration in your journal and final report.
 
@@ -114,4 +175,3 @@ If you like voxels, check out [this three.js-based project](http://voxeljs.com).
 ## Useful material and references
 
 Sometimes, some feature of the Javascript language can be tricky: [a growing list of quirks](http://bonsaiden.github.io/JavaScript-Garden/)
-
