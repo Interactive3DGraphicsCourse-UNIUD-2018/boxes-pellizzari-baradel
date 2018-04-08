@@ -5,7 +5,9 @@ Primo progetto per il corso di Interactive 3D Graphics, anno accademico 2017/201
 Il progetto consiste in una web-app di un gioco di simulazione di guida. In questa applicazione l'utente potrà controllare un veicolo con lo scopo di raggiungere il traguardo cercando di evitare gli ostacoli, generati casualmente.
 I comandi disponibili sono quelli di movimenti laterale (Freccia Sinistra, Freccia Destra), oppure le lettere *A e D* (dai tasti *WASD*).
 
-Durante il gioco esiste una variabile punteggio che corrisponde alla distanza percorsa dall'inizio della partita; anche la velocità della macchina dipende dalla distanza percorsa, in particolare questa aumenta di un certo fattore ogni 250 unità di spazio per rendere il gioco più difficile. 
+Durante il gioco esiste una variabile punteggio che corrisponde alla distanza percorsa dall'inizio della partita; anche la velocità della macchina dipende dalla distanza percorsa, in particolare questa aumenta di un certo fattore ogni 250 unità di spazio per rendere il gioco più difficile.
+
+Abbiamo inserito nella scena gli Orbit Controls in modo che l'utente durante la partita possa effettuare lo zoom in/out e spostarsi con il mouse per inquadrare la macchina da un'altra angolazione (rispetto a quella che abbiamo impostato di default all'inizio) in modo da aumentare la giocabilità e poter osservare la scena dai vari punti di vista. Abbiamo dovuto disabilitare la possibilità di usare questi controlli dalla tastiera con il metodo: controls.enableKeys = false; altrimenti ogni volta che si usano le frecce per schivare gli ostacoli queste hanno l'effetto di spostare l'inquadratura, di conseguenza è difficile capire se la macchina si sia veramente spostata oppure se sia semplicemente cambiata l'angolazione della camera.
 
 ## Risultato del Progetto
 ### Generazione degli ostacoli e decorazioni
