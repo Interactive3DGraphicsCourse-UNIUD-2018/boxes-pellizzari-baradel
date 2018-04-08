@@ -48,6 +48,7 @@
 		var asteroidi = new Array();
 		var contatoreAsteroide = 0;
 		var numAsteroide = 0;
+		var velocitaDiscesa = 0;
 		var mulini = new Array();
 		var posizioneZMulini = new Array();
 		var contatoreMulini = 0;
@@ -55,7 +56,7 @@
 		// VARIABILI PER IL MOVIMENTO DELLA MACCHINA
 		var xDestra, xSinistra;  // possibili valori della posizione x della macchina durante la partita (sulla strada)
 		var muoviDx, muoviSx;  // variabili booleane che servono per il movimento della macchina a destra e a sinistra
-		var spostamentoMacchinaZ = 0.7;  // quanto velocemente avanza la macchina verso -z
+		var spostamentoMacchinaZ = 0.5;  // quanto velocemente avanza la macchina verso -z
 		var spostamentoMacchinaX;  // quanto la macchina si sposta su x alla pressione dei tasti direzionali
 		var fasciaPosizioneMacchina = 0;  // quanto lontano si trova la macchina dall'origine
 		var offsetMacchinaZ = 1.75;  // distanza fra centro della macchina e fine delle ruote (su z)
@@ -856,19 +857,23 @@
 		function animaAsteroide(distanzaZ){
 			var posizioneMinima = yFineRuote + 2;
 			var distanzaY = asteroidi[numAsteroide].position.y - posizioneMinima;  // distanza che l'asteroide deve percorrere su y
-			var velocitaDiscesa = calcolaVelocitaDiscesa(distanzaZ, distanzaY);
+			if(velocitaDiscesa == 0){
+				calcolaVelocitaDiscesa(distanzaZ, distanzaY);
+			}
 			asteroidi[numAsteroide].position.y -= velocitaDiscesa;
 			if(asteroidi[numAsteroide].position.y <= posizioneMinima){  // se scende troppo
 				asteroidi[numAsteroide].position.y  = posizioneMinima;
 				numAsteroide++;
+				velocitaDiscesa = 0;
 			}
 		}
 
 		function calcolaVelocitaDiscesa(distanzaZ, distanzaY){
-			var numeroFrameDistanzaZ = 	distanzaZ/2*spostamentoMacchinaZ;  // in quanti frame la macchina percorre distanzaZ
-			var velocita = distanzaY/numeroFrameDistanzaZ;
-			return velocita;
+			var numeroFrameDistanzaZ = 	distanzaZ/spostamentoMacchinaZ;  // in quanti frame la macchina percorre distanzaZ
+			var numeroFrameDistanzaY = numeroFrameDistanzaZ * distanzaY/distanzaZ;
+			velocitaDiscesa = 6*distanzaY/numeroFrameDistanzaY;
 		}
+
 
 		function controllaMulino(){
 			if(numMulini < contatoreMulini){  // se ci sono ancora mulini in scena
@@ -919,14 +924,14 @@
 		function stampaTestoFinale(){
 			if(gameOver){
 				var materialeTesto = new THREE.MeshPhongMaterial( {color: "red"} );
-				stampaTesto("Hai perso!", materialeTesto);
+				stampaTesto("Hai perso!", materialeTesto, pivotMacchina.position.z -2);
 			}else{
 				var materialeTesto = new THREE.MeshPhongMaterial( {color: "red"} );
-				stampaTesto("Hai vinto!", materialeTesto);
+				stampaTesto("Hai vinto!", materialeTesto, -9990);
 			}
 		}
 
-		function stampaTesto(testo, materialeTesto){
+		function stampaTesto(testo, materialeTesto, z){
 			var fontLoader = new THREE.FontLoader();
 
 			fontLoader.load('font/helvetiker_bold.typeface.json', function(font) {
@@ -941,7 +946,7 @@
 				var testoFinale = new THREE.Mesh(geometriaTesto, materialeTesto);
 				testoFinale.castShadow = true;
 				testoFinale.receiveShadow = true;
-				testoFinale.position.set(-10, pivotMacchina.position.y + 4, pivotMacchina.position.z - 2);
+				testoFinale.position.set(-10, pivotMacchina.position.y + 4, z);
 				scene.add(testoFinale);
 
 			});
