@@ -9,6 +9,8 @@ Durante il gioco esiste una variabile punteggio che corrisponde alla distanza pe
 
 Abbiamo inserito nella scena gli Orbit Controls in modo che l'utente durante la partita possa effettuare lo zoom in/out e spostarsi con il mouse per inquadrare la macchina da un'altra angolazione (rispetto a quella che abbiamo impostato di default all'inizio) in modo da aumentare la giocabilità e poter osservare la scena dai vari punti di vista. Abbiamo dovuto disabilitare la possibilità di usare questi controlli dalla tastiera con il metodo: controls.enableKeys = false; altrimenti ogni volta che si usano le frecce per schivare gli ostacoli queste hanno l'effetto di spostare l'inquadratura, di conseguenza è difficile capire se la macchina si sia veramente spostata oppure se sia semplicemente cambiata l'angolazione della camera.
 
+Volendo si può arrivare alla fine del gioco senza dover schivare gli ostacoli; questo l'abbiamo utilizzato in fase di testing per vedere cosa succedeva nella parte finale senza dover per forza schivare ogni volta tutti gli ostacoli. Per farlo è sufficiente commentare la riga 965 che chiama la procedura controllaCollisioni(), disattivando questa procedura non si arriva mai alla situazione di gameOver quindi il gioco prosegue finché la macchina non supera il traguardo.
+
 ## Risultato del Progetto
 ### Generazione degli ostacoli e decorazioni
 Dopo la costruzione della scena di base, gli ostacoli vengono inseriti casualmente in base alla distanza fra ostacoli seguenti grazie alla funzione
