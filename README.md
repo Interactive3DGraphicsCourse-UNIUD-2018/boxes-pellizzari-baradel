@@ -41,10 +41,10 @@ Grazie a questi due array è possibile controllare le collisioni ad ogni iterazi
 ### Animazione delle decorazioni e degli asteroidi
 Si è scelto di creare un paesaggio nella scena in modo da rendere più interessante il tragitto, anche gli ostacoli "esterni" (quindi le decorazioni) sono inseriti casualmente, le decorazioni sono:
 * un semplice albero;
-* un mulino le cui pale ruotano costantemente;
+* un mulino le cui pale ruotano quando la macchina si avvicina;
 * un omino che salta e agita le braccia "facendo il tifo" per il giocatore;
 
-Inoltre fra gli ostacoli vi è un asteroide che ha una bassa probabilità di apparire rispetto agli altri ostacoli, esso farà il suo ingresso in scena cadendo dal cielo.
+Inoltre fra gli ostacoli vi è un asteroide che ha una bassa probabilità di apparire rispetto agli altri ostacoli; esso farà il suo ingresso in scena cadendo dal cielo.
 
 ## Considerazioni finali
 
