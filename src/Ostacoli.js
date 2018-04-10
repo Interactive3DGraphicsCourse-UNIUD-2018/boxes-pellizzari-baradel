@@ -211,7 +211,7 @@
 			var geometriaTesta = new THREE.BoxGeometry(0.25, 0.3, 0.25);
 			var geometriaArto = new THREE.BoxGeometry(0.1, 0.6, 0.1);
 
-			var materialeCorpo = new THREE.MeshPhongMaterial({color: "green"});
+			var materialeCorpo = new THREE.MeshPhongMaterial({color: Math.random() * 0xffffff});
 			var materialeTesta = new THREE.MeshPhongMaterial({color: "pink"});
 			var materialeArto = new THREE.MeshPhongMaterial({color: "pink"});
 
@@ -275,10 +275,34 @@
 		}
 		
 		function inserisciOmini(){
-			arrayOmini = new Array();
-			arrayVelOmini = new Array();
 			for (var i = 0; i < 83; i++){
 				var posizioneOminoZ = 75+(120*i);
 				aggiungiOmino(scegliLato()/2.5, -posizioneOminoZ);
+			}
+		}
+		
+		function inserisciOminiStart(){
+			for(var i = 0; i < 20; i++){
+				var posizioneOminoX = randomConRange(-15, 15);
+				var posizioneOminoZ = -randomConRange(0, 20);
+				if(posizioneOminoX < 0){
+					posizioneOminoX -= 6;
+				}else{
+					posizioneOminoX += 6;
+				}
+				aggiungiOmino(posizioneOminoX, posizioneOminoZ);
+			}
+		}
+		
+		function inserisciOminiEnd(){
+			for(var i = 0; i < 75; i++){
+				var posizioneOminoX = randomConRange(-20, 20);
+				var posizioneOminoZ = -(randomConRange(0, 60)+9980);
+				if(posizioneOminoX < 0){
+					posizioneOminoX -= 6;
+				}else{
+					posizioneOminoX += 6;
+				}
+				aggiungiOmino(posizioneOminoX, posizioneOminoZ);
 			}
 		}

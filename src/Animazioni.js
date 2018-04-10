@@ -99,6 +99,11 @@
 				pivotCamera.rotateY(0.01);
 			}
 		}
+		
+		// CALCOLO E STAMPO IL PUNTEGGIO
+		if(punteggio >= 10000){  // non puo superare i 10000
+			punteggio = 10000;
+		}
 
 		function stampaPunteggio(){
 			var node = document.getElementById("punteggio");

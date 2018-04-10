@@ -64,7 +64,7 @@
 		// VARIABILI PER IL MOVIMENTO DELLA MACCHINA
 		var xDestra, xSinistra;  // possibili valori della posizione x della macchina durante la partita (sulla strada)
 		var muoviDx, muoviSx;  // variabili booleane che servono per il movimento della macchina a destra e a sinistra
-		var spostamentoMacchinaZ = 0.5;  // quanto velocemente avanza la macchina verso -z
+		var spostamentoMacchinaZ = 0.6;  // quanto velocemente avanza la macchina verso -z
 		var spostamentoMacchinaX;  // quanto la macchina si sposta su x alla pressione dei tasti direzionali
 		var fasciaPosizioneMacchina = 0;  // quanto lontano si trova la macchina dall'origine
 		var offsetMacchinaZ = 1.75;  // distanza fra centro della macchina e fine delle ruote (su z)
@@ -140,7 +140,13 @@
 			muoviSx = false;  // inizialmente tutti a false
 			muoviDx = false;
 			
+			arrayOmini = new Array();
+			arrayVelOmini = new Array();
 			inserisciOmini();
+			inserisciOminiStart();
+			inserisciOminiEnd();
+
+			
 		}  // Start()
 
 		// VARIABILI CHE SERVONO PER LE COLLISIONI
@@ -149,7 +155,7 @@
 		numeroOstacoli = (lunghezzaStrada/spazioFraOstacoli) -2;  // -2 perchè in posizione 0 e in fondo alla pista non metto ostacoli
 		posizioneOstacoli = new Array(); // Array per la gestione delle collisioni, ostacoli[i] = 1 (Destra), -1(Sinistra)
 		tipoOstacoli = new Array(); //Array per la gestione delle collisione, indica solo il tipo di ostacolo con le stringhe (es. "asteroide")
-
+		
 
 		function animaScena(){
 			// AGGIORNO IL FUOCO
@@ -184,14 +190,8 @@
 				rotateCamera();
 				controllaBottone();
 			}
-
-			// CALCOLO E STAMPO IL PUNTEGGIO
 			punteggio = Math.floor(Math.abs(pivotMacchina.position.z));
-			if(punteggio >= 10000){  // non puo superare i 10000
-				punteggio = 10000;
-			}
 			stampaPunteggio();
-
 		}
 
 		// UPDATE E CICLO DI RENDER

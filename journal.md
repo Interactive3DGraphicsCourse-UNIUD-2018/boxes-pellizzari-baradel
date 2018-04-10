@@ -72,6 +72,13 @@ Dove *xDestra * 1,25* rappresenta un fattore di scala del movimento, mentre *piv
 
 ### Ultime modifiche al progetto e sistemazione del readme.md
 
+# Successivo alla consegna
+
+### 10/4
+* Aggiunti omini inizio gara e al traguardo;
+* Aggiunti due screenshots;
+* Modificati gli omini in modo che la maglietta abbia un colore casuale;
+
 ### Sito delle Texture TEMP
 http://www.wildtextures.com/category/free-textures/
 
