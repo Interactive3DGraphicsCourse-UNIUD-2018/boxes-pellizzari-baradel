@@ -52,10 +52,8 @@ All'inizio e alla fine della pista, un gruppo di omini farà il tifo per il gioc
 ## screenshots e immagini del Progetto
 
 ![Screenshot1](/Screenshots/Screenshot1.jpg)
-![Screenshot2](/Screenshots/Screenshot2.jpg)
-![Screenshot3](/Screenshots/Screenshot3.jpg)
-![Screenshot4](/Screenshots/Screenshot4.jpg)
-![Screenshot4](/Screenshots/FestinaAllaPartenza.jpg)
+![Screenshot2](/Screenshots/Screenshot3.jpg)
+![Screenshot3](/Screenshots/FestinaAllaPartenza.jpg)
 ![Screenshot4](/Screenshots/FestoneAlTraguardo.jpg)
 
 
