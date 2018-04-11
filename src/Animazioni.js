@@ -75,7 +75,7 @@
 		function animaMulino(){
 			mulini[numMulini].rotateX(0.05);
 		}
-		
+
 		function aggiornaOmini(){
 			for(var i = 0; i <arrayOmini.length; i++){
 				if(-pivotMacchina.position.z + 50 > -arrayOmini[i].position.z){ //&& -pivotMacchina.position.z - 50 < -arrayOmini[i].position.z)
@@ -86,8 +86,8 @@
 					arrayOmini[i].position.y += arrayVelOmini[i];
 					arrayVelOmini[i] -= gravita;
 				 }
-				arrayOmini[i].lookAt(pivotMacchina.position);
-			}
+				  arrayOmini[i].lookAt(pivotMacchina.position);
+		     }
 		}
 
 		function rotateCamera(){
@@ -96,13 +96,13 @@
 				pivotCamera.rotateY(0.01);
 			}
 		}
-		
-		// CALCOLO E STAMPO IL PUNTEGGIO
-		if(punteggio >= 10000){  // non puo superare i 10000
-			punteggio = 10000;
-		}
 
 		function stampaPunteggio(){
+			punteggio = Math.floor(Math.abs(pivotMacchina.position.z));
+			// CALCOLO E STAMPO IL PUNTEGGIO
+			if(punteggio >= 10000){  // non puo superare i 10000
+				punteggio = 10000;
+			}
 			var node = document.getElementById("punteggio");
 			node.innerHTML = "Punteggio:" + "<br/>" + punteggio;
 		}
