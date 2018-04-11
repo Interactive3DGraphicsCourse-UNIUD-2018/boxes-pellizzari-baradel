@@ -99,12 +99,12 @@ function aggiungiStellaBonus(){
   pivotMacchina.add(stella);
 }
 function aggiornaBonus(){
-  if(powerUpAttivi[0] == 0 || powerUpAttivi[0] <= -pivotMacchina.position.z){
+  if(powerUpAttivi[0] == 0 || powerUpAttivi[0] <= -pivotMacchina.position.z || gameOver == true){
     //Questo controllo permette alla stella di sparire dopo 100;
     stella.visible = false;
     powerUpAttivi[0] = 0;
-  }else if (powerUpAttivi[0] > 0){
+  }else if(powerUpAttivi[0] > 0){
     stella.rotateY(0.05);
-    punteggio += 10; //TEMP NON FUNZIONA
+    punteggioBonus += 5;
   }
 }

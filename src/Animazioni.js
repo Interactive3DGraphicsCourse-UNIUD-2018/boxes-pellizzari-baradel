@@ -1,4 +1,4 @@
-// FUNZIONI PER LE ANIMAZIONI E PER IL PUNTEGGIO
+		// FUOCO
 		function aggiornaFuoco(arrFuoco){
 			for(var i = 0; i < arrFuoco.length; i++){
 				if(arrFuoco[i].position.y < 3 && !gameOver){
@@ -10,7 +10,7 @@
 					arrFuoco[i].material.color.g += 0.06; //Varia il colore in modo che passi da rosso a giallo;
 					arrFuoco[i].material.opacity -= 0.03;
 				}else{
-					if(!gameOver && punteggio < 10000){
+					if(!gameOver && pivotMacchina.position.z > -10000){
 						arrFuoco[i].position.x = Math.random() - 0.5; //Scelgo una nuova posizione su X casuale per il cubo;
 						// Queste procedure resettano i cubetti allo stato iniziale;
 						arrFuoco[i].position.y = 0;
@@ -25,7 +25,7 @@
 				}
 			}
 		}
-
+		// ASTEROIDI
 		function controllaAsteroide(){
 			if(numAsteroide < contatoreAsteroide){
 				var distanzaZ = Math.abs(asteroidi[numAsteroide].position.z - pivotMacchina.position.z);
@@ -57,7 +57,7 @@
 			velocitaDiscesa = 6*distanzaY/numeroFrameDistanzaY;
 		}
 
-
+		// MULINI
 		function controllaMulino(){
 			if(numMulini < contatoreMulini){  // se ci sono ancora mulini in scena
 				var distanzaMacchMul = Math.abs(posizioneZMulini[numMulini] - pivotMacchina.position.z);
@@ -75,7 +75,7 @@
 		function animaMulino(){
 			mulini[numMulini].rotateX(0.05);
 		}
-
+		// OMINI
 		function aggiornaOmini(){
 			for(var i = 0; i <arrayOmini.length; i++){
 				if(-pivotMacchina.position.z + 50 > -arrayOmini[i].position.z){ //&& -pivotMacchina.position.z - 50 < -arrayOmini[i].position.z)
@@ -90,7 +90,7 @@
 		     }
 		}
 
-
+		// POWERUP: aggiorna il movimento dei power up non ancora "presi" presenti sulla scena
 		function aggiornaMeshPowerUp(){
 			for(var i = 0; i < powerUpInScena.length; i++){
 				powerUpInScena[i].position.y = Math.sin(angoloOscillazioneVerticale) + 0.7; //Oscillazione verticale del powerUp;
@@ -98,22 +98,19 @@
 				powerUpInScena[i].rotateY(0.05);
 			}
 		}
-
+		// CAMERA A FINE PARTITA
 		function rotateCamera(){
 			if(rotazioneAttuale < rad(360)){ // Se la camera non ha compiuto un giro intorno alla macchina
 				rotazioneAttuale += 0.01;
 				pivotCamera.rotateY(0.01);
 			}
 		}
-
+		// PUNTEGGIO
 		function stampaPunteggio(){
 			punteggio = Math.floor(Math.abs(pivotMacchina.position.z));
-			// CALCOLO E STAMPO IL PUNTEGGIO
-			if(punteggio >= 10000){  // non puo superare i 10000
-				punteggio = 10000;
-			}
+			punteggioTotale = punteggio + punteggioBonus;
 			var node = document.getElementById("punteggio");
-			node.innerHTML = "Punteggio:" + "<br/>" + punteggio;
+			node.innerHTML = "Punteggio:" + "<br/>" + punteggioTotale;
 		}
 
 		function nuovaPartita() {
