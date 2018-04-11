@@ -12,9 +12,8 @@ function aggiungiPowerUp(){
   powerUpAttivi.push(0); // TEMP per indicare la presenza o meno di uno scudo; (0 assente, 1 presente);
 
   aggiungiStellaBonus();
-  stella.visible = false;
-  //aggiungiCannoneBonus();
-  //aggiungiScudoBonus();
+  aggiungiCannoneMacchina();
+  aggiungiScudoBonus();
 
   var distanzaPowerUp = 10000 / (numeroPowerUp+1);
   var tipologiePowerUp = 3; //Tipologie Possibili di powerUp; TEMP attualmente 3;
@@ -84,27 +83,59 @@ function aggiungiBonus(tipoProssimoBonus){
     break;
     case "cannone":
     powerUpAttivi[1] = 3;
+    cannoneBonus.visible = true;
     break;
     case"scudo":
     powerUpAttivi[2] = 1;
+    scudoBonus.visible = true;
     break;
   }
 }
-function aggiungiStellaBonus(){
-  var geometriaStella = new THREE.BoxGeometry(1,1,1); //TEMP per testare;
-  var materialeStella = new THREE.MeshPhongMaterial({color: 0xffff00});
-  stella = new THREE.Mesh(geometriaStella, materialeStella);
-  stella.position.set(0,3,0);
 
-  pivotMacchina.add(stella);
+function aggiungiStellaBonus(){
+  var geometriaStella = new THREE.BoxGeometry(0.3,0.3,0); //TEMP per testare;
+  var materialeStella = new THREE.MeshBasicMaterial({color: 0xffff00});
+  stella = new THREE.Mesh(geometriaStella, materialeStella);
+  stella.position.set(3.7,4.4,-6);
+
+  camera.add(stella);
 }
+
+function aggiungiCannoneMacchina(){
+  var geometriaCannone = new THREE.BoxGeometry(0.5, 0.5, 0.5); //TEMP per testare;
+  var materialeCannone = new THREE.MeshBasicMaterial({color: 0x333333});
+  cannoneBonus = new THREE.Mesh(geometriaCannone, materialeCannone);
+  cannoneBonus.position.set(0, 2, 0);
+
+  pivotMacchina.add(cannoneBonus);
+}
+
+function aggiungiScudoBonus(){
+  var geometriaScudo = new THREE.BoxGeometry(1, 1, 0.1); //TEMP per testare;
+  var materialeScudo = new THREE.MeshPhongMaterial({color: 0x555555});
+  scudoBonus = new THREE.Mesh(geometriaScudo, materialeScudo);
+  scudoBonus.position.set(0, 0.5, -2.5);
+
+  pivotMacchina.add(scudoBonus);
+}
+
 function aggiornaBonus(){
+  //Controlli per il moltiplicatore bonus
   if(powerUpAttivi[0] == 0 || powerUpAttivi[0] <= -pivotMacchina.position.z){
     //Questo controllo permette alla stella di sparire dopo 100;
     stella.visible = false;
     powerUpAttivi[0] = 0;
   }else if (powerUpAttivi[0] > 0){
-    stella.rotateY(0.05);
     punteggio += 10; //TEMP NON FUNZIONA
   }
+  //Controlli per il bonus cannone
+  if(powerUpAttivi[1] == 0){
+    cannoneBonus.visible = false;
+  }
+
+  //Controlli per il bonus scudo
+  if(powerUpAttivi[2] == 0){
+    scudoBonus.visible = false;
+  }
+
 }
