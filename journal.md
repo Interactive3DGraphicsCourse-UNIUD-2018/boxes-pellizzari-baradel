@@ -79,6 +79,10 @@ Dove *xDestra * 1,25* rappresenta un fattore di scala del movimento, mentre *piv
 * Aggiunti due screenshots;
 * Modificati gli omini in modo che la maglietta abbia un colore casuale;
 
+### 11/04
+* Aggiunte 3 mesh cubiche temporanee per 3 tipologie di power up, un moltiplicatore punti, un cannone per abbattere gli ostacoli e uno scudo (rappresentati rispettivamente con un cubo giallo, uno grigio e uno rosso);
+* Aggiunte le animazioni idle delle 3 tipologie di power up mentre sono sulla pista;
+
 ### Sito delle Texture TEMP
 http://www.wildtextures.com/category/free-textures/
 
