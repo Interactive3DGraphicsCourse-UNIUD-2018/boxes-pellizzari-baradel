@@ -34,6 +34,7 @@
 		<script src="src/MovimentoMacchina.js"></script>
 		<script src="src/Collisioni.js"></script>
 		<script src="src/Animazioni.js"></script>
+		<script src="src/PowerUp.js"></script>
 	</head>
 	<body>
 		<div class="right", id="punteggio" > </div>
@@ -158,95 +159,14 @@
 			muoviSx = false;  // inizialmente tutti a false
 			muoviDx = false;
 
-			// TEMP Creazione e test dei PowerUp
-			powerUpAttivi = new Array();
-			powerUpInScena = new Array();
-			powerUpInScenaTipo = new Array();
-			powerUpAttivi.push(0); // TEMP per indicare la z mancante per il moliplicatore;
-			powerUpAttivi.push(0); // TEMP per indicare i colpi di cannone restanti;
-			powerUpAttivi.push(0); // TEMP per indicare la presenza o meno di uno scudo; (0 assente, 1 presente);
-
 			aggiungiPowerUp();
 		}  // Start()
-
-		/*
-		*  Aggiunge i powerUp alla scena ponendoli con una certa probabilita'
-		*  nello spazio fra due ostacoli in modo che sia possibile prenderli;
-		*/
-		function aggiungiPowerUp(){
-			var distanzaPowerUp = 10000 / (numeroPowerUp+1);
-			var tipologiePowerUp = 3; //Tipologie Possibili di powerUp; TEMP attualmente 3;
-			for(var i = 0; i < numeroPowerUp - 1; i++){ // -2 perche' 48+1*200+25 = 9825, non ce ne starebbero altri;
-				var prossimoPowerUp = randomConRange(0, tipologiePowerUp-1);
-				switch (prossimoPowerUp){
-					case 0:
-					aggiungiMoltiplicatorePunti((i+1)*distanzaPowerUp + 25); //Aggiungo il powerUp a 200*i + 25 per evitare gli ostacoli
-					break;
-					case 1:
-					aggiungiCannone((i+1)*distanzaPowerUp + 25);
-					break;
-					case 2:
-					aggiungiScudo((i+1)*distanzaPowerUp + 25);
-					break;
-				}
-			}
-		}
-
-		// Aggiunge un moltiplicatore di punteggio alla scena a distanza z;
-		function aggiungiMoltiplicatorePunti(z){
-			var x = scegliLato();
-			var geometriaStella = new THREE.BoxGeometry(2,2,2); //TEMP per testare;
-			var materialeStella = new THREE.MeshPhongMaterial({color: 0xffff00});
-			var moltiplicatore = new THREE.Mesh(geometriaStella, materialeStella);
-
-			moltiplicatore.position.set(x/7.2, 1, -z);
-
-			scene.add(moltiplicatore);
-			powerUpInScena.push(moltiplicatore);
-			powerUpInScenaTipo.push("stella");
-		}
-
-		// Aggiunge il cannone alla scena e agli array
-		function aggiungiCannone(z){
-			var x = scegliLato();
-			var geometriaCannone = new THREE.BoxGeometry(2,2,2); //TEMP per testare;
-			var materialeCannone = new THREE.MeshPhongMaterial({color: 0x555555});
-			var cannoneMesh = new THREE.Mesh(geometriaCannone, materialeCannone);
-
-			cannoneMesh.position.set(x/7.2, 1, -z);
-
-			scene.add(cannoneMesh);
-			powerUpInScena.push(cannoneMesh);
-			powerUpInScenaTipo.push("cannone");
-		}
-
-		// Aggiunge lo scudo alla scena e agli array
-		function aggiungiScudo(z){
-			var x = scegliLato();
-			var geometriaScudo = new THREE.BoxGeometry(2,2,2); //TEMP per testare;
-			var materialeScudo = new THREE.MeshPhongMaterial({color: 0xff0000}); // TEMP di colore rosso per test;
-			var scudoMesh = new THREE.Mesh(geometriaScudo, materialeScudo);
-
-			scudoMesh.position.set(x/7.2, 1, -z);
-
-			scene.add(scudoMesh);
-			powerUpInScena.push(scudoMesh);
-			powerUpInScenaTipo.push("scudo");
-		}
-
-		function aggiornaPowerUp(){
-			for(var i = 0; i < powerUpInScena.length; i++){
-				powerUpInScena[i].position.y = Math.sin(angoloOscillazioneVerticale) + 0.7; //Oscillazione verticale del powerUp;
-				angoloOscillazioneVerticale = angoloOscillazioneVerticale%(Math.PI*2) + 0.002;
-				powerUpInScena[i].rotateY(0.05);
-			}
-		}
 
 		function animaScena(){
 			// AGGIORNO IL FUOCO
 			aggiornaFuoco(arrFuoco);
 			aggiornaOmini();
-			aggiornaPowerUp();
+			aggiornaMeshPowerUp();
 			if(!gameOver){
 				// ANIMO GLI EVENTUALI ASTEROIDI
 				controllaAsteroide();
@@ -255,6 +175,7 @@
 				// VERIFICO CHE NON CI SIANO COLLISIONI
 				controllaCollisioni();
 				controllaCollisioniBonus();
+				aggiornaBonus();
 
 				console.log(powerUpAttivi[0]);
 				console.log(powerUpAttivi[1]);

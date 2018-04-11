@@ -145,17 +145,3 @@
 				return false;
 			}
 		}
-
-		function aggiungiBonus(tipoProssimoBonus){
-			switch( tipoProssimoBonus ){
-				case "stella":
-				powerUpAttivi[0] = 100;
-				break;
-				case "cannone":
-				powerUpAttivi[1] = 3;
-				break;
-				case"scudo":
-				powerUpAttivi[2] = 1;
-				break;
-			}
-		}

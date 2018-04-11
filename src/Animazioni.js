@@ -90,6 +90,15 @@
 		     }
 		}
 
+
+		function aggiornaMeshPowerUp(){
+			for(var i = 0; i < powerUpInScena.length; i++){
+				powerUpInScena[i].position.y = Math.sin(angoloOscillazioneVerticale) + 0.7; //Oscillazione verticale del powerUp;
+				angoloOscillazioneVerticale = angoloOscillazioneVerticale%(Math.PI*2) + 0.002;
+				powerUpInScena[i].rotateY(0.05);
+			}
+		}
+
 		function rotateCamera(){
 			if(rotazioneAttuale < rad(360)){ // Se la camera non ha compiuto un giro intorno alla macchina
 				rotazioneAttuale += 0.01;
