@@ -161,19 +161,18 @@
 			// TEMP Creazione e test dei PowerUp
 			powerUpAttivi = new Array();
 			powerUpInScena = new Array();
+			powerUpInScenaTipo = new Array();
 			powerUpAttivi.push(0); // TEMP per indicare la z mancante per il moliplicatore;
 			powerUpAttivi.push(0); // TEMP per indicare i colpi di cannone restanti;
 			powerUpAttivi.push(0); // TEMP per indicare la presenza o meno di uno scudo; (0 assente, 1 presente);
 
-			/*
-			*  Aggiunge i powerUp alla scena ponendoli con una certa probabilita'
-			*  nello spazio fra due ostacoli in modo che sia possibile prenderli;
-			*/
-
 			aggiungiPowerUp();
 		}  // Start()
 
-		// Aggiunge un moltiplicatore di punteggio alla scena a distanza z;
+		/*
+		*  Aggiunge i powerUp alla scena ponendoli con una certa probabilita'
+		*  nello spazio fra due ostacoli in modo che sia possibile prenderli;
+		*/
 		function aggiungiPowerUp(){
 			var distanzaPowerUp = 10000 / (numeroPowerUp+1);
 			var tipologiePowerUp = 3; //Tipologie Possibili di powerUp; TEMP attualmente 1;
@@ -193,7 +192,7 @@
 			}
 		}
 
-		// Aggiunge il moltiplicatore alla scena e agli array
+		// Aggiunge un moltiplicatore di punteggio alla scena a distanza z;
 		function aggiungiMoltiplicatorePunti(z){
 			var x = scegliLato();
 			var geometriaStella = new THREE.BoxGeometry(2,2,2); //TEMP per testare;
@@ -204,8 +203,9 @@
 
 			scene.add(moltiplicatore);
 			powerUpInScena.push(moltiplicatore);
+			powerUpInScenaTipo.push("stella");
 
-			powerUpAttivi[0] = 100; //Per 100 di distanza il punteggio e' moltiplicato;
+			//powerUpAttivi[0] = 100; //Per 100 di distanza il punteggio e' moltiplicato; TODO da mettere nel posto giusto
 		}
 
 		// Aggiunge il cannone alla scena e agli array
@@ -219,8 +219,9 @@
 
 			scene.add(cannoneMesh);
 			powerUpInScena.push(cannoneMesh);
+			powerUpInScenaTipo.push("cannone");
 
-			powerUpAttivi[1] = 3; //Aggiorno i colpi disponibili a 3;
+			//powerUpAttivi[1] = 3; //Aggiorno i colpi disponibili a 3; TODO da mettere nel posto giusto
 		}
 
 		// Aggiunge lo scudo alla scena e agli array
@@ -234,8 +235,9 @@
 
 			scene.add(scudoMesh);
 			powerUpInScena.push(scudoMesh);
+			powerUpInScenaTipo.push("scudo");
 
-			powerUpAttivi[2] = 1; //Aggiorno il bonus di scudo a 1;
+			//powerUpAttivi[2] = 1; //Aggiorno il bonus di scudo a 1; TODO da mettere nel posto giusto
 		}
 
 		function aggiornaPowerUp(){
@@ -258,6 +260,12 @@
 				controllaMulino();
 				// VERIFICO CHE NON CI SIANO COLLISIONI
 				controllaCollisioni();
+				controllaCollisioniBonus();
+
+				console.log(powerUpAttivi[0]);
+				console.log(powerUpAttivi[1]);
+				console.log(powerUpAttivi[2]);
+
 				// CALCOLO LO SPOSTAMENTO CHE DOVREBBE FARE LA MACCHINA
 				scegliSpostamentoMacchina(pivotMacchina.position.z);  // in base alla posizione della macchina...
 				if(!gameOver){

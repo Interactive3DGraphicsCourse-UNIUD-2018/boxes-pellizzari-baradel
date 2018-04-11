@@ -24,6 +24,35 @@
 			}
 		}
 
+		/*
+		* Controlla se la macchina ha una collisione con un bonus, in tal caso aggiorna i dati relativi a tale bonus e
+		* elimina il bonus dalla scena.
+		*/
+		function controllaCollisioniBonus(){
+			var prossimoBonus = powerUpInScena[0];
+			var distanzaZ = 1; // Valore predefinito per il bonus, in modo da avere un'area cubica piuttosto che irregolare;
+			var distanzaX = 1;
+			var tipoProssimoBonus = powerUpInScenaTipo[0]; //Stringa che rappresenta il prossimo bonus;
+			if(-pivotMacchina.position.z - 5 >= -powerUpInScena[0].position.z){ //Se la macchina ha superato completamente il bonus passa al successivo;
+				powerUpInScena.shift();
+				powerUpInScenaTipo.shift();
+				prossimoBonus = powerUpInScena[0];
+				tipoProssimoBonus = powerUpInScenaTipo[0];
+			}else{ //Se il prossimo bonus e' corretto
+				if(collisioneAsseZ("avanti", -prossimoBonus.position.z, offsetMacchinaZ, 1) && collisioneAsseXPowerUp(prossimoBonus, offsetMacchinaX)){
+					aggiungiBonus(tipoProssimoBonus);
+					scene.remove(powerUpInScena[0]);
+					powerUpInScena.shift();
+					powerUpInScenaTipo.shift();
+				}else if(collisioneAsseZ("indietro", -prossimoBonus.position.z, offsetMacchinaZ, 1) && collisioneAsseXPowerUp(prossimoBonus, offsetMacchinaX)){
+					aggiungiBonus(tipoProssimoBonus);
+					scene.remove(powerUpInScena[0]);
+					powerUpInScena.shift();
+					powerUpInScenaTipo.shift();
+				}
+			}
+		}
+
 		// Funzione per calcolare la misura su X dell'oggetto, in modo da coprire l'intera superfice;
 		function calcolaDistanzaX(i){
 			switch(tipoOstacoli[i]){
@@ -46,6 +75,23 @@
 				}
 			}else{ // Se l'ostacolo si trova a sinistra
 				if((pivotMacchina.position.x - offsetMacchinaX) <= (posizioneOstacoli[i] + distanzaX)){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}
+		function collisioneAsseXPowerUp(prossimoBonus, offsetMacchinaX){
+			var xProssimoBonus = prossimoBonus.position.x ;
+			var xMacchina = pivotMacchina.position.x;
+			if (xProssimoBonus > 0){ // Se si trova a destra
+				if((xMacchina + offsetMacchinaX) >= (xProssimoBonus - 1)){
+					return true;
+				}else{
+					return false;
+				}
+			}else{
+				if((xMacchina - offsetMacchinaX) <= (xProssimoBonus + 1)){
 					return true;
 				}else{
 					return false;
@@ -97,5 +143,19 @@
 				return true;
 			}else{
 				return false;
+			}
+		}
+
+		function aggiungiBonus(tipoProssimoBonus){
+			switch( tipoProssimoBonus ){
+				case "stella":
+				powerUpAttivi[0] = 100;
+				break;
+				case "cannone":
+				powerUpAttivi[1] = 3;
+				break;
+				case"scudo":
+				powerUpAttivi[2] = 1;
+				break;
 			}
 		}
