@@ -120,6 +120,7 @@ function aggiungiScudoBonus(){
 }
 
 function aggiornaBonus(){
+<<<<<<< HEAD
   //Controlli per il moltiplicatore bonus
   if(powerUpAttivi[0] == 0 || powerUpAttivi[0] <= -pivotMacchina.position.z){
     //Questo controllo permette alla stella di sparire dopo 100;
@@ -127,6 +128,15 @@ function aggiornaBonus(){
     powerUpAttivi[0] = 0;
   }else if (powerUpAttivi[0] > 0){
     punteggio += 10; //TEMP NON FUNZIONA
+=======
+  if(powerUpAttivi[0] == 0 || powerUpAttivi[0] <= -pivotMacchina.position.z || gameOver == true){
+    //Questo controllo permette alla stella di sparire dopo 100;
+    stella.visible = false;
+    powerUpAttivi[0] = 0;
+  }else if(powerUpAttivi[0] > 0){
+    stella.rotateY(0.05);
+    punteggioBonus += 5;
+>>>>>>> a1042dd0309b06404324d82f1a2fdbd24e41cf16
   }
   //Controlli per il bonus cannone
   if(powerUpAttivi[1] == 0){

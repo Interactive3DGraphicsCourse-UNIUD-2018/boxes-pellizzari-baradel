@@ -27,6 +27,7 @@
 		<script src="lib/stats.min.js"></script>
 		<script src="lib/Coordinates.js"></script>
 		<script src="lib/OrbitControls.js"></script>
+		
 		<script src="src/Macchina.js"></script>
 		<script src="src/Strada.js"></script>
 		<script src="src/Ausiliarie.js"></script>
@@ -87,6 +88,8 @@
 		var rotazioneAttuale = 0;
 		var bottoneInserito = false;
 		punteggio = 0;  // variabile per tenere conto dei punti in base alla distanza percorsa
+		punteggioBonus = 0;
+		punteggioTotale = 0;
 
 		function Start() {
 			scene = new THREE.Scene();
@@ -177,6 +180,13 @@
 				controllaCollisioniBonus();
 				aggiornaBonus();
 
+<<<<<<< HEAD
+=======
+				console.log("Distanza fine stella: " + powerUpAttivi[0]);
+				console.log("Colpi rimanenti: " + powerUpAttivi[1]);
+				console.log("Scudo: " + powerUpAttivi[2]);
+
+>>>>>>> a1042dd0309b06404324d82f1a2fdbd24e41cf16
 				// CALCOLO LO SPOSTAMENTO CHE DOVREBBE FARE LA MACCHINA
 				scegliSpostamentoMacchina(pivotMacchina.position.z);  // in base alla posizione della macchina...
 				if(!gameOver){
