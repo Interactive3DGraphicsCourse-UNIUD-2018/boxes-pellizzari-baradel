@@ -49,7 +49,13 @@ Si è scelto di creare un paesaggio nella scena in modo da rendere più interess
 Inoltre fra gli ostacoli vi è un asteroide che ha una bassa probabilità di apparire rispetto agli altri ostacoli; esso farà il suo ingresso in scena cadendo dal cielo.
 All'inizio e alla fine della pista, un gruppo di omini farà il tifo per il giocatore, ogni omino ha una maglietta di un colore casuale;
 
-## screenshots e immagini del Progetto
+### PowerUps
+Durante la partita è possibile trovare fra gli ostacoli alcuni PowerUp che possono essere utili per ottenere un punteggio maggiore. In particolare i diversi tipi di PowerUp disponibili sono:
+* una "stella" che incrementa il moltiplicatore di punteggio per una certa distanza
+* uno scudo che permette di distruggere il prossimo ostacolo senza perdere la partita
+* un cannone, con un certo numero di colpi, che equipaggiato alla macchina permette di sparare, quindi distruggere, alcuni ostacoli
+
+## Screenshots e immagini del Progetto
 
 ![Screenshot1](/Screenshots/Screenshot1.jpg)
 ![Screenshot2](/Screenshots/Screenshot3.jpg)
