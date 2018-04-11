@@ -96,7 +96,7 @@ function aggiungiStellaBonus(){
   var geometriaStella = new THREE.BoxGeometry(0.3,0.3,0); //TEMP per testare;
   var materialeStella = new THREE.MeshBasicMaterial({color: 0xffff00});
   stella = new THREE.Mesh(geometriaStella, materialeStella);
-  stella.position.set(3.7,4.4,-6);
+  stella.position.set(8.8,4.4,-6);
 
   camera.add(stella);
 }
@@ -125,7 +125,6 @@ function aggiornaBonus(){
     stella.visible = false;
     powerUpAttivi[0] = 0;
   }else if(powerUpAttivi[0] > 0){
-    stella.rotateY(0.05);
     punteggioBonus += 5;
   }
   //Controlli per il bonus cannone
