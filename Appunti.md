@@ -5,7 +5,7 @@
     3. Capacità di distruggere ostacoli, cannone;
     4. Scudo o vita extra, un cuore o uno scudo;
 
-Per la gestione del sistema dei power up ci potrebbe essere un array di dimensione N dove N è il numero di power up esistenti, ad ogni indice corrisponde il valore del power up, ad esempio array[0] potrebbe rappresentare il molitplicatore di punteggio e sarà un numero intero oppure il numero di secondi restanti per il bonus, così come array[2] potrebbe contenrtr il numero di carcihe o array[3] true o false per sapere se c'è o meno scudo;
+Per la gestione del sistema dei power up ci potrebbe essere un array di dimensione N dove N è il numero di power up esistenti, ad ogni indice corrisponde il valore del power up, ad esempio array[0] potrebbe rappresentare il molitplicatore di punteggio e sarà un numero intero oppure il numero di secondi restanti per il bonus, così come array[2] potrebbe contenere il numero di cariche o array[3] true o false per sapere se c'è o meno scudo;
 
 ## Da fare
 * Creare la struttura corretta per la stella, il cannone e lo scudo;
