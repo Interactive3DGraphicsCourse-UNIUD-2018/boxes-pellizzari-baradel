@@ -115,8 +115,10 @@
 			scene.add(pivotMacchina);
 			scene.fog = new THREE.Fog( 0x71b2cf, 0.1, 400 );
 
-			inserisciStrada();  // inserisco strada con gli ostacoli
+			inserisciStrada();  // inserisco strada...
+			inserisciOstacoli(lunghezzaStrada);  // con gli ostacoli
 			inserisciLuceEmisferica();
+			
 			arrayOmini = new Array();
 			arrayVelOmini = new Array();
 			inserisciOmini();

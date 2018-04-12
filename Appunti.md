@@ -17,3 +17,4 @@ Per la gestione del sistema dei power up ci potrebbe essere un array di dimensio
 * Aggiungere un bonus "misterioso" o casuale (anche con effetto negativo? es: visuale oscurata/nebbia fitta)
 * Aggiungere come ostacolo la pozzanghera che fa slittare la macchina fuori dalla scena
 * Fare + livelli di gioco (?)
+* Punteggio in giallo quando è attivo il moltiplicatore
