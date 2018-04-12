@@ -3,7 +3,7 @@
 *  nello spazio fra due ostacoli in modo che sia possibile prenderli;
 */
 function aggiungiPowerUp(){
-
+  // dichiaro e inizializzo i tre vettori
   powerUpAttivi = new Array();
   powerUpInScena = new Array();
   powerUpInScenaTipo = new Array();
@@ -14,14 +14,14 @@ function aggiungiPowerUp(){
   aggiungiStellaBonus();
   aggiungiCannoneMacchina();
   aggiungiScudoBonus();
-// inserisco i power up "a caso" sulla strada
+  // inserisco i power up "a caso" sulla strada
   var distanzaPowerUp = 10000 / (numeroPowerUp+1);
-  var tipologiePowerUp = 3; //Tipologie Possibili di powerUp; TEMP attualmente 3;
+  var tipologiePowerUp = 3; // Tipologie Possibili di powerUp; TEMP attualmente 3;
   for(var i = 0; i < numeroPowerUp - 1; i++){ // -2 perche' 48+1*200+25 = 9825, non ce ne starebbero altri;
     var prossimoPowerUp = randomConRange(0, tipologiePowerUp-1);
     switch (prossimoPowerUp){
       case 0:
-        aggiungiMoltiplicatorePunti((i+1)*distanzaPowerUp + 25); //Aggiungo il powerUp a 200*i + 25 per evitare gli ostacoli
+        aggiungiMoltiplicatorePunti((i+1)*distanzaPowerUp + 25); // Aggiungo il powerUp a 200*i + 25 per evitare gli ostacoli
         break;
       case 1:
         aggiungiCannone((i+1)*distanzaPowerUp + 25);
@@ -36,9 +36,9 @@ function aggiungiPowerUp(){
 // Aggiunge un moltiplicatore di punteggio alla scena a distanza z;
 function aggiungiMoltiplicatorePunti(z){
   var x = scegliLato();
-  var geometriaStella = new THREE.BoxGeometry(2,2,2); //TEMP per testare;
+  var geometriaStella = new THREE.BoxGeometry(2,2,2); // TEMP per testare;
   var materialeStella = new THREE.MeshPhongMaterial({color: 0xffff00});
-  var moltiplicatore = new THREE.Mesh(geometriaStella, materialeStella);
+  var moltiplicatore = new THREE.Mesh(geometriaStella, materialeStella);  // TODO nome : stella
 
   moltiplicatore.position.set(x/7.2, 1, -z);
 
@@ -74,7 +74,7 @@ function aggiungiScudo(z){
   powerUpInScena.push(scudoMesh);
   powerUpInScenaTipo.push("scudo");
 }
-
+// aggiungo i bonus alla macchina quando li "prende"
 function aggiungiBonus(tipoProssimoBonus){
   switch( tipoProssimoBonus ){
     case "stella":
@@ -118,7 +118,7 @@ function aggiungiScudoBonus(){  // TODO nome funzione: aggiungiScudoMacchina
 
   pivotMacchina.add(scudoBonus);
 }
-
+// Controllo se i bonus sono ancora validi
 function aggiornaBonus(){
   // Questo controllo permette alla stella di sparire dopo 100
   if(powerUpAttivi[0] == 0 || powerUpAttivi[0] <= -pivotMacchina.position.z || gameOver == true){
