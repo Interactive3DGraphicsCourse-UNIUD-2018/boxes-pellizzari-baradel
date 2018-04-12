@@ -21,14 +21,14 @@ function aggiungiPowerUp(){
     var prossimoPowerUp = randomConRange(0, tipologiePowerUp-1);
     switch (prossimoPowerUp){
       case 0:
-      aggiungiMoltiplicatorePunti((i+1)*distanzaPowerUp + 25); //Aggiungo il powerUp a 200*i + 25 per evitare gli ostacoli
-      break;
+        aggiungiMoltiplicatorePunti((i+1)*distanzaPowerUp + 25); //Aggiungo il powerUp a 200*i + 25 per evitare gli ostacoli
+        break;
       case 1:
-      aggiungiCannone((i+1)*distanzaPowerUp + 25);
-      break;
+        aggiungiCannone((i+1)*distanzaPowerUp + 25);
+        break;
       case 2:
-      aggiungiScudo((i+1)*distanzaPowerUp + 25);
-      break;
+       aggiungiScudo((i+1)*distanzaPowerUp + 25);
+       break;
     }
   }
 }
@@ -78,21 +78,21 @@ function aggiungiScudo(z){
 function aggiungiBonus(tipoProssimoBonus){
   switch( tipoProssimoBonus ){
     case "stella":
-    powerUpAttivi[0] = -pivotMacchina.position.z + 100;  // posizione in cui finira l'effetto del bonus
-    stella.visible = true;
-    break;
+      powerUpAttivi[0] = -pivotMacchina.position.z + 100;  // posizione in cui finira l'effetto del bonus
+      stella.visible = true;
+      break;
     case "cannone":
-    powerUpAttivi[1] = 3;  // 3 colpi disponibili
-    cannoneBonus.visible = true;
-    break;
+      powerUpAttivi[1] = 3;  // 3 colpi disponibili
+      cannoneBonus.visible = true;
+      break;
     case"scudo":
-    powerUpAttivi[2] = 1;  // 1 = scudo attivo, 0 = scudo non attivo
-    scudoBonus.visible = true;
-    break;
+      powerUpAttivi[2] = 1;  // 1 = scudo attivo, 0 = scudo non attivo
+      scudoBonus.visible = true;
+      break;
   }
 }
 
-function aggiungiStellaBonus(){
+function aggiungiStellaBonus(){  // TODO nome funzione: aggiungiStellaMacchina
   var geometriaStella = new THREE.BoxGeometry(0.3,0.3,0); //TEMP per testare;
   var materialeStella = new THREE.MeshBasicMaterial({color: 0xffff00});
   stella = new THREE.Mesh(geometriaStella, materialeStella);
@@ -101,7 +101,7 @@ function aggiungiStellaBonus(){
   camera.add(stella);
 }
 
-function aggiungiCannoneMacchina(){
+function aggiungiCannoneMacchina(){ 
   var geometriaCannone = new THREE.BoxGeometry(0.5, 0.5, 0.5); //TEMP per testare;
   var materialeCannone = new THREE.MeshBasicMaterial({color: 0x333333});
   cannoneBonus = new THREE.Mesh(geometriaCannone, materialeCannone);
@@ -110,7 +110,7 @@ function aggiungiCannoneMacchina(){
   pivotMacchina.add(cannoneBonus);
 }
 
-function aggiungiScudoBonus(){
+function aggiungiScudoBonus(){  // TODO nome funzione: aggiungiScudoMacchina
   var geometriaScudo = new THREE.BoxGeometry(1, 1, 0.1); //TEMP per testare;
   var materialeScudo = new THREE.MeshPhongMaterial({color: 0x555555});
   scudoBonus = new THREE.Mesh(geometriaScudo, materialeScudo);
