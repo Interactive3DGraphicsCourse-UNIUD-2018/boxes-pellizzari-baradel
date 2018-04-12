@@ -15,3 +15,5 @@ Per la gestione del sistema dei power up ci potrebbe essere un array di dimensio
     * Comandi del cannone con barra spaziatrice e animazione dell'esplosione di un ostacolo;
     * Animazione di distruzione di un ostacolo grazie allo scudo;
 * Aggiungere un bonus "misterioso" o casuale (anche con effetto negativo? es: visuale oscurata/nebbia fitta)
+* Aggiungere come ostacolo la pozzanghera che fa slittare la macchina fuori dalla scena
+* Fare + livelli di gioco (?)
