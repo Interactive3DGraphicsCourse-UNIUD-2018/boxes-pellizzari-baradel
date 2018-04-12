@@ -22,7 +22,6 @@
 			aggiungiBloccoFine(altezzaStrada, yStrada, -lunghezzaStrada);
 			inserisciMezzeria(altezzaStrada, lunghezzaStrada, yStrada);
 			inserisciErba(larghezzaStrada, altezzaStrada, lunghezzaStrada, yStrada);
-			inserisciOstacoli(lunghezzaStrada);  // TODO chiamare questa funzione dall'index
 		}
 
 		function aggiungiBloccoFine(altezzaStrada, yStrada, z){

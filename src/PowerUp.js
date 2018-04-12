@@ -1,6 +1,5 @@
 /*
-*  Aggiunge i powerUp alla scena ponendoli con una certa probabilita'
-*  nello spazio fra due ostacoli in modo che sia possibile prenderli;
+* AGGIUNGO I POWER UP ALLA SCENA (come cubi/oggetti presenti sulla strada da raccogliere per ottenere i potenziamenti)
 */
 function aggiungiPowerUp(){
   // dichiaro e inizializzo i tre vettori
@@ -10,10 +9,10 @@ function aggiungiPowerUp(){
   powerUpAttivi.push(0); // TEMP per indicare la z dove terminera';
   powerUpAttivi.push(0); // TEMP per indicare i colpi di cannone restanti;
   powerUpAttivi.push(0); // TEMP per indicare la presenza o meno di uno scudo; (0 assente, 1 presente);
-
-  aggiungiStellaBonus();
+  // aggiungo i power up alla macchina (ma finche non vengono "presi" non sono visibili)
+  aggiungiStellaMacchina();
   aggiungiCannoneMacchina();
-  aggiungiScudoBonus();
+  aggiungiScudoMacchina();
   // inserisco i power up "a caso" sulla strada
   var distanzaPowerUp = 10000 / (numeroPowerUp+1);
   var tipologiePowerUp = 3; // Tipologie Possibili di powerUp; TEMP attualmente 3;
@@ -21,7 +20,7 @@ function aggiungiPowerUp(){
     var prossimoPowerUp = randomConRange(0, tipologiePowerUp-1);
     switch (prossimoPowerUp){
       case 0:
-        aggiungiMoltiplicatorePunti((i+1)*distanzaPowerUp + 25); // Aggiungo il powerUp a 200*i + 25 per evitare gli ostacoli
+        aggiungiStella((i+1)*distanzaPowerUp + 25); // Aggiungo il powerUp a 200*i + 25 per evitare gli ostacoli
         break;
       case 1:
         aggiungiCannone((i+1)*distanzaPowerUp + 25);
@@ -34,16 +33,16 @@ function aggiungiPowerUp(){
 }
 
 // Aggiunge un moltiplicatore di punteggio alla scena a distanza z;
-function aggiungiMoltiplicatorePunti(z){
+function aggiungiStella(z){
   var x = scegliLato();
   var geometriaStella = new THREE.BoxGeometry(2,2,2); // TEMP per testare;
   var materialeStella = new THREE.MeshPhongMaterial({color: 0xffff00});
-  var moltiplicatore = new THREE.Mesh(geometriaStella, materialeStella);  // TODO nome : stella
+  var stellaMesh = new THREE.Mesh(geometriaStella, materialeStella);
 
-  moltiplicatore.position.set(x/7.2, 1, -z);
+  stellaMesh.position.set(x/7.2, 1, -z);
 
-  scene.add(moltiplicatore);
-  powerUpInScena.push(moltiplicatore);
+  scene.add(stellaMesh);
+  powerUpInScena.push(stellaMesh);
   powerUpInScenaTipo.push("stella");
 }
 
@@ -79,7 +78,7 @@ function aggiungiBonus(tipoProssimoBonus){
   switch( tipoProssimoBonus ){
     case "stella":
       powerUpAttivi[0] = -pivotMacchina.position.z + 100;  // posizione in cui finira l'effetto del bonus
-      stella.visible = true;
+      stellaBonus.visible = true;
       break;
     case "cannone":
       powerUpAttivi[1] = 3;  // 3 colpi disponibili
@@ -91,14 +90,14 @@ function aggiungiBonus(tipoProssimoBonus){
       break;
   }
 }
-
-function aggiungiStellaBonus(){  // TODO nome funzione: aggiungiStellaMacchina
+// AGGIUNGO I POWER UP ALLA MACCHINA
+function aggiungiStellaMacchina(){
   var geometriaStella = new THREE.BoxGeometry(0.3,0.3,0); //TEMP per testare;
   var materialeStella = new THREE.MeshBasicMaterial({color: 0xffff00});
-  stella = new THREE.Mesh(geometriaStella, materialeStella);
-  stella.position.set(8.8,4.4,-6);
+  stellaBonus = new THREE.Mesh(geometriaStella, materialeStella);
+  stellaBonus.position.set(8.8,4.4,-6);
 
-  camera.add(stella);
+  camera.add(stellaBonus);
 }
 
 function aggiungiCannoneMacchina(){ 
@@ -110,7 +109,7 @@ function aggiungiCannoneMacchina(){
   pivotMacchina.add(cannoneBonus);
 }
 
-function aggiungiScudoBonus(){  // TODO nome funzione: aggiungiScudoMacchina
+function aggiungiScudoMacchina(){
   var geometriaScudo = new THREE.BoxGeometry(1, 1, 0.1); //TEMP per testare;
   var materialeScudo = new THREE.MeshPhongMaterial({color: 0x555555});
   scudoBonus = new THREE.Mesh(geometriaScudo, materialeScudo);
@@ -118,11 +117,11 @@ function aggiungiScudoBonus(){  // TODO nome funzione: aggiungiScudoMacchina
 
   pivotMacchina.add(scudoBonus);
 }
-// Controllo se i bonus sono ancora validi
+// CONTROLLO SE I BONUS SONO ANCORA VALIDI ALTRIMENTI LI RIMUOVO
 function aggiornaBonus(){
   // Questo controllo permette alla stella di sparire dopo 100
   if(powerUpAttivi[0] == 0 || powerUpAttivi[0] <= -pivotMacchina.position.z || gameOver == true){
-    stella.visible = false;
+    stellaBonus.visible = false;
     powerUpAttivi[0] = 0;
   }else if(powerUpAttivi[0] > 0){  // se e' ancora attiva applico l'effetto del suo bonus
     punteggioBonus += 5;
