@@ -14,7 +14,7 @@ function aggiungiPowerUp(){
   aggiungiStellaBonus();
   aggiungiCannoneMacchina();
   aggiungiScudoBonus();
-
+// inserisco i power up "a caso" sulla strada
   var distanzaPowerUp = 10000 / (numeroPowerUp+1);
   var tipologiePowerUp = 3; //Tipologie Possibili di powerUp; TEMP attualmente 3;
   for(var i = 0; i < numeroPowerUp - 1; i++){ // -2 perche' 48+1*200+25 = 9825, non ce ne starebbero altri;
