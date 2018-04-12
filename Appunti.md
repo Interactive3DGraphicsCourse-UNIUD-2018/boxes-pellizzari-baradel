@@ -14,3 +14,4 @@ Per la gestione del sistema dei power up ci potrebbe essere un array di dimensio
     * Indicatore di bonus vicino al punteggio;
     * Comandi del cannone con barra spaziatrice e animazione dell'esplosione di un ostacolo;
     * Animazione di distruzione di un ostacolo grazie allo scudo;
+* Aggiungere un bonus "misterioso" o casuale (anche con effetto negativo? es: visuale oscurata/nebbia fitta)
