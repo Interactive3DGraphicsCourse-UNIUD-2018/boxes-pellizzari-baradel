@@ -78,15 +78,15 @@ function aggiungiScudo(z){
 function aggiungiBonus(tipoProssimoBonus){
   switch( tipoProssimoBonus ){
     case "stella":
-    powerUpAttivi[0] = -pivotMacchina.position.z + 100;
+    powerUpAttivi[0] = -pivotMacchina.position.z + 100;  // posizione in cui finira l'effetto del bonus
     stella.visible = true;
     break;
     case "cannone":
-    powerUpAttivi[1] = 3;
+    powerUpAttivi[1] = 3;  // 3 colpi disponibili
     cannoneBonus.visible = true;
     break;
     case"scudo":
-    powerUpAttivi[2] = 1;
+    powerUpAttivi[2] = 1;  // 1 = scudo attivo, 0 = scudo non attivo
     scudoBonus.visible = true;
     break;
   }
@@ -120,20 +120,20 @@ function aggiungiScudoBonus(){
 }
 
 function aggiornaBonus(){
+  // Questo controllo permette alla stella di sparire dopo 100
   if(powerUpAttivi[0] == 0 || powerUpAttivi[0] <= -pivotMacchina.position.z || gameOver == true){
-    //Questo controllo permette alla stella di sparire dopo 100;
     stella.visible = false;
     powerUpAttivi[0] = 0;
-  }else if(powerUpAttivi[0] > 0){
+  }else if(powerUpAttivi[0] > 0){  // se e' ancora attiva applico l'effetto del suo bonus
     punteggioBonus += 5;
   }
   //Controlli per il bonus cannone
-  if(powerUpAttivi[1] == 0){
+  if(powerUpAttivi[1] == 0 || gameOver == true){
     cannoneBonus.visible = false;
   }
 
   //Controlli per il bonus scudo
-  if(powerUpAttivi[2] == 0){
+  if(powerUpAttivi[2] == 0 || gameOver == true){
     scudoBonus.visible = false;
   }
 }
