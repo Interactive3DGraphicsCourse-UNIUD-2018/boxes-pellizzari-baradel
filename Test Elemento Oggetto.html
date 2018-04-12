@@ -88,11 +88,12 @@
 				velocita:0,
 			};
 
-			oggettoUccello.aggiungi = function(){
+			oggettoUccello.aggiungi = function(x, z){
 				this.centro = new THREE.Object3D();
 				this.mesh.position.z = -5;
 				this.centro.add(this.mesh);
 				scene.add(this.centro);
+				this.centro.position.set(x, 0, z);
 			};
 
 			oggettoUccello.animazioneAli = function(){
@@ -108,7 +109,7 @@
 				this.velocita = this.velocita%360 + 0.05;
 			};
 
-			oggettoUccello.aggiungi();
+			oggettoUccello.aggiungi(0,0);
 
 			stats = new Stats();
 			stats.domElement.style.position = 'absolute';
