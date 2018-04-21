@@ -18,3 +18,4 @@ Per la gestione del sistema dei power up ci potrebbe essere un array di dimensio
 * Aggiungere come ostacolo la pozzanghera che fa slittare la macchina fuori dalla scena
 * Fare + livelli di gioco (?)
 * Punteggio in giallo quando è attivo il moltiplicatore
+* Usare una spotlight per il fanale della macchina
