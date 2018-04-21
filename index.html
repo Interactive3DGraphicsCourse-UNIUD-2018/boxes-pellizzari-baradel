@@ -63,12 +63,12 @@
 		var posizioneZMulini = new Array();
 		var contatoreMulini = 0;
 		var numMulini = 0;
-		var soundGameOver = false;  // mi dice che non e' ancora iniziato il suono di gameover
+		var suonoGameOver = false;  // mi dice che non e' ancora iniziato il suono di gameover
 
 		// VARIABILI PER IL MOVIMENTO DELLA MACCHINA
 		var xDestra, xSinistra;  // possibili valori della posizione x della macchina durante la partita (sulla strada)
 		var muoviDx, muoviSx;  // variabili booleane che servono per il movimento della macchina a destra e a sinistra
-		var spostamentoMacchinaZ = 0.6;  // quanto velocemente avanza la macchina verso -z
+		var spostamentoMacchinaZ = 0.5;  // quanto velocemente avanza la macchina verso -z
 		var spostamentoMacchinaX;  // quanto la macchina si sposta su x alla pressione dei tasti direzionali
 		var fasciaPosizioneMacchina = 0;  // quanto lontano si trova la macchina dall'origine
 		var offsetMacchinaZ = 1.75;  // distanza fra centro della macchina e fine delle ruote (su z)
@@ -80,6 +80,7 @@
 		numeroOstacoli = (lunghezzaStrada/spazioFraOstacoli) -2;  // -2 perchè in posizione 0 e in fondo alla pista non metto ostacoli
 		posizioneOstacoli = new Array(); // Array per la gestione delle collisioni, ostacoli[i] = 1 (Destra), -1(Sinistra)
 		tipoOstacoli = new Array(); //Array per la gestione delle collisione, indica solo il tipo di ostacolo con le stringhe (es. "asteroide")
+		var rimuoviOstacolo = -1;  // variabile che mi dice quale ostacolo va rimosso (dopo la collisione se la macchina aveva lo scudo)
 
 		// Variabili per i PowerUp
 		numeroPowerUp = 49; //Sono presenti 49 powerUp in pista, uno ogni 4 ostacoli;
@@ -211,9 +212,8 @@
 				controllaCollisioniBonus();
 				aggiornaBonus();
 
-				//console.log("Distanza fine stella: " + powerUpAttivi[0]);
 				//console.log("Colpi rimanenti: " + powerUpAttivi[1]);
-				//console.log("Scudo: " + powerUpAttivi[2]);
+				console.log("Scudo: " + powerUpAttivi[2]);
 
 				// CALCOLO LO SPOSTAMENTO CHE DOVREBBE FARE LA MACCHINA
 				scegliSpostamentoMacchina(pivotMacchina.position.z);  // in base alla posizione della macchina...
@@ -235,10 +235,10 @@
 			}else{  // gameOver
 				// FERMO LA CANZONE
 				audioMacchina.pause();
-				// ESEGUO IL SUONO DI GAMEOVER se non ancora eseguito
-				if(!soundGameOver){
+				// RIPRODUCO IL SUONO DI GAMEOVER se non ancora eseguito
+				if(!suonoGameOver){
 					audioGameOver.play();
-					soundGameOver = true;
+					suonoGameOver = true;
 				}
 				// FACCIO RUOTARE LA TELECAMERA ATTORNO ALLA MACCHINA E INSERISCO IL BOTTONE DI NUOVA PARTITA
 				rotateCamera();

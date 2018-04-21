@@ -8,7 +8,8 @@
 Per la gestione del sistema dei power up ci potrebbe essere un array di dimensione N dove N è il numero di power up esistenti, ad ogni indice corrisponde il valore del power up, ad esempio array[0] potrebbe rappresentare il molitplicatore di punteggio e sarà un numero intero oppure il numero di secondi restanti per il bonus, così come array[2] potrebbe contenere il numero di cariche o array[3] true o false per sapere se c'è o meno scudo;
 
 ## Da fare
-* Togliere l'oggetto stellaBonus (il quadratino giallo) dalla scena (aspetto la tua approvazione, guarda i TODO nel file PowerUp.js se ti va bene quello che è commentato si può togliere)
+* Partenza più "lenta"
+* C'è un cubo giallo all'inizio (0,0,0), in teoria è un powerUp da rimuovere
 * Creare la struttura corretta per il cannone e lo scudo;
 * Aggiungere degli shader per i 3 bonus per creare degli effetti migliori;
 * Implementare le funzioni per la collisione con un bonus e l'aggiunta degli effetti, in particolare
