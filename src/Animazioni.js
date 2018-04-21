@@ -107,7 +107,7 @@
 		}
 		// PUNTEGGIO
 		function stampaPunteggio(){
-			punteggio = Math.floor(Math.abs(pivotMacchina.position.z));
+			punteggio = Math.abs(Math.floor(pivotMacchina.position.z));
 			punteggioTotale = punteggio + punteggioBonus;
 			var node = document.getElementById("punteggio");
 			node.innerHTML = "Punteggio:" + "<br/>" + punteggioTotale;

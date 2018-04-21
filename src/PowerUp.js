@@ -10,7 +10,6 @@ function aggiungiPowerUp(){
   powerUpAttivi.push(0); // TEMP per indicare i colpi di cannone restanti;
   powerUpAttivi.push(0); // TEMP per indicare la presenza o meno di uno scudo; (0 assente, 1 presente);
   // aggiungo i power up alla macchina (ma finche non vengono "presi" non sono visibili)
-  //aggiungiStellaMacchina(); TODO togliere (?)
   aggiungiCannoneMacchina();
   aggiungiScudoMacchina();
   // inserisco i power up "a caso" sulla strada
@@ -32,7 +31,7 @@ function aggiungiPowerUp(){
   }
 }
 
-// Aggiunge la stella (mltiplicatore) alla scena e agli array
+// Aggiunge la stella (moltiplicatore) alla scena e agli array
 function aggiungiStella(z){
   var x = scegliLato();
   var geometriaStella = new THREE.BoxGeometry(2,2,2); // TEMP per testare;
@@ -73,12 +72,11 @@ function aggiungiScudo(z){
   powerUpInScena.push(scudoMesh);
   powerUpInScenaTipo.push("scudo");
 }
-// aggiungo i bonus alla macchina quando li "prende"
+// aggiungo i bonus alla macchina quando li "prende" colpendoli
 function aggiungiBonus(tipoProssimoBonus){
   switch( tipoProssimoBonus ){
     case "stella":
       powerUpAttivi[0] = -pivotMacchina.position.z + 100;  // posizione in cui finira l'effetto del bonus
-      //stellaBonus.visible = true;  TODO togliere (?)
 	  audioPowerUp.play();
 	  document.getElementById("punteggio").style.color = "yellow";
       break;
@@ -94,19 +92,7 @@ function aggiungiBonus(tipoProssimoBonus){
       break;
   }
 }
-// AGGIUNGO I POWER UP ALLA MACCHINA
-// TODO si puo togliere questa funzione, la stella non serve che venga aggiunta alla macchina, il punteggio e' in giallo secondo me puo bastare
-/*
-function aggiungiStellaMacchina(){  
-  var geometriaStella = new THREE.BoxGeometry(0.3,0.3,0); // TEMP per testare;
-  var materialeStella = new THREE.MeshBasicMaterial({color: 0xffff00});
-  stellaBonus = new THREE.Mesh(geometriaStella, materialeStella);
-  stellaBonus.position.set(8.8,4.4,-6);
-
-  camera.add(stellaBonus);
-} 
-*/
-
+// AGGIUNGO I POWER UP ALLA MACCHINA (la stella non serve aggiungerla, il colore del punteggio diventa giallo per indicare che e' attivo il moltiplicatore)
 function aggiungiCannoneMacchina(){ 
   var geometriaCannone = new THREE.BoxGeometry(0.5, 0.5, 0.5); //TEMP per testare;
   var materialeCannone = new THREE.MeshBasicMaterial({color: 0x333333});
@@ -126,20 +112,18 @@ function aggiungiScudoMacchina(){
 }
 // CONTROLLO SE I BONUS SONO ANCORA VALIDI ALTRIMENTI LI RIMUOVO
 function aggiornaBonus(){
-  // Questo controllo permette alla stella di sparire dopo 100
+  // Controllo per il bonus stella (moltiplicatore)
   if(powerUpAttivi[0] == 0 || powerUpAttivi[0] <= -pivotMacchina.position.z || gameOver == true){
-    //stellaBonus.visible = false; TODO togliere (?)
-	document.getElementById("punteggio").style.color = "black";
+	document.getElementById("punteggio").style.color = "black";  // riporto il punteggio al suo colore originale
     powerUpAttivi[0] = 0;
   }else if(powerUpAttivi[0] > 0){  // se e' ancora attiva applico l'effetto del suo bonus
-    punteggioBonus += 5;
+    punteggioBonus += 4;
   }
-  //Controlli per il bonus cannone
+  // Controlli per il bonus cannone
   if(powerUpAttivi[1] == 0 || gameOver == true){
     cannoneBonus.visible = false;
   }
-
-  //Controlli per il bonus scudo
+  // Controlli per il bonus scudo
   if(powerUpAttivi[2] == 0 || gameOver == true){
     scudoBonus.visible = false;
   }
