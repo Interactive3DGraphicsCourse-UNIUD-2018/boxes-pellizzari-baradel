@@ -10,6 +10,10 @@ Per la gestione del sistema dei power up ci potrebbe essere un array di dimensio
 ## Da fare
 * Partenza più "lenta"
 * C'è un cubo giallo all'inizio (0,0,0), in teoria è un powerUp da rimuovere
+* Sistemare bordo superiore (html) che può coprire parti della scena
+* Texture dal sito
+* Suono applausi a fine partita
+* Shader per power up (e per applicare le texture)
 * Creare la struttura corretta per il cannone e lo scudo;
 * Aggiungere degli shader per i 3 bonus per creare degli effetti migliori;
 * Implementare le funzioni per la collisione con un bonus e l'aggiunta degli effetti, in particolare
