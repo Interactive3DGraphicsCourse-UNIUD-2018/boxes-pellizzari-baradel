@@ -72,7 +72,6 @@ function aggiungiScudo(z){
   powerUpInScena.push(scudoMesh);
   powerUpInScenaTipo.push("scudo");
 }
-
 // aggiungo i bonus alla macchina quando li "prende" colpendoli
 function aggiungiBonus(tipoProssimoBonus){
   switch( tipoProssimoBonus ){
@@ -93,7 +92,6 @@ function aggiungiBonus(tipoProssimoBonus){
       break;
   }
 }
-
 // AGGIUNGO I POWER UP ALLA MACCHINA (la stella non serve aggiungerla, il colore del punteggio diventa giallo per indicare che e' attivo il moltiplicatore)
 function aggiungiCannoneMacchina(){ 
   var geometriaCannone = new THREE.BoxGeometry(0.5, 0.5, 0.5); //TEMP per testare;
@@ -119,7 +117,7 @@ function aggiornaBonus(){
 	document.getElementById("punteggio").style.color = "black";  // riporto il punteggio al suo colore originale
     powerUpAttivi[0] = 0;
   }else if(powerUpAttivi[0] > 0){  // se e' ancora attiva applico l'effetto del suo bonus
-    punteggioBonus += 4;
+    punteggioBonus += Math.round(3 * spostamentoMacchinaZ);
   }
   // Controlli per il bonus cannone
   if(powerUpAttivi[1] == 0 || gameOver == true){

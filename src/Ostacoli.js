@@ -115,7 +115,7 @@
 		}
 
 		function aggiungiAlbero(x, z){
-			var altezzaAlbero = randomConRange(2,3);
+			var altezzaAlbero = randomConRange(15,30)/10;
 			var geometriaAlbero = new THREE.BoxGeometry(1, altezzaAlbero, 1);
 			var materialeAlbero = new THREE.MeshPhongMaterial({color:"brown"});
 			var tronco = new THREE.Mesh(geometriaAlbero, materialeAlbero);
