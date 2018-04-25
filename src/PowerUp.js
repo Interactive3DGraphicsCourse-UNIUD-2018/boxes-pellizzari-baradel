@@ -72,6 +72,7 @@ function aggiungiScudo(z){
   powerUpInScena.push(scudoMesh);
   powerUpInScenaTipo.push("scudo");
 }
+
 // aggiungo i bonus alla macchina quando li "prende" colpendoli
 function aggiungiBonus(tipoProssimoBonus){
   switch( tipoProssimoBonus ){
@@ -92,6 +93,7 @@ function aggiungiBonus(tipoProssimoBonus){
       break;
   }
 }
+
 // AGGIUNGO I POWER UP ALLA MACCHINA (la stella non serve aggiungerla, il colore del punteggio diventa giallo per indicare che e' attivo il moltiplicatore)
 function aggiungiCannoneMacchina(){ 
   var geometriaCannone = new THREE.BoxGeometry(0.5, 0.5, 0.5); //TEMP per testare;

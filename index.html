@@ -213,7 +213,6 @@
 				aggiornaBonus();
 
 				//console.log("Colpi rimanenti: " + powerUpAttivi[1]);
-				console.log("Scudo: " + powerUpAttivi[2]);
 
 				// CALCOLO LO SPOSTAMENTO CHE DOVREBBE FARE LA MACCHINA
 				scegliSpostamentoMacchina(pivotMacchina.position.z);  // in base alla posizione della macchina...
@@ -240,6 +239,7 @@
 					audioGameOver.play();
 					suonoGameOver = true;
 				}
+  
 				// FACCIO RUOTARE LA TELECAMERA ATTORNO ALLA MACCHINA E INSERISCO IL BOTTONE DI NUOVA PARTITA
 				rotateCamera();
 				controllaBottone();
