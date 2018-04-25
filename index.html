@@ -64,6 +64,7 @@
 		var contatoreMulini = 0;
 		var numMulini = 0;
 		var suonoGameOver = false;  // mi dice che non e' ancora iniziato il suono di gameover
+		var suonoVittoria = false; // stessa cosa in caso di vittoria
 
 		// VARIABILI PER IL MOVIMENTO DELLA MACCHINA
 		var xDestra, xSinistra;  // possibili valori della posizione x della macchina durante la partita (sulla strada)
@@ -173,12 +174,14 @@
 			var audioLoaderMacchina = new THREE.AudioLoader();
 			var audioLoaderGameOver = new THREE.AudioLoader();
 			var audioLoaderPowerUp = new THREE.AudioLoader();
+			var audioLoaderVittoria = new THREE.AudioLoader();
 			var listener = new THREE.AudioListener();
 			camera.add(listener);
-			// 
+
 			audioLoaderMacchina.load( 'sounds/376737_Skullbeatz___Bad_Cat_Maste.mp3', function ( buffer ) {
 					audioMacchina = new THREE.PositionalAudio( listener );
 					audioMacchina.setBuffer( buffer );
+					audioMacchina.setLoop(true);
 					audioMacchina.play();
 					pivotMacchina.add( audioMacchina );
 			} );
@@ -193,7 +196,13 @@
 					audioPowerUp = new THREE.PositionalAudio( listener );
 					audioPowerUp.setBuffer( buffer );
 					pivotMacchina.add( audioPowerUp );
-			} );			
+			} );		
+
+			audioLoaderVittoria.load( 'sounds/applause.mp3', function ( buffer ) {
+					audioVittoria = new THREE.PositionalAudio( listener );
+					audioVittoria.setBuffer( buffer );
+					pivotMacchina.add( audioVittoria );
+			} );				
 			
 		}  // Start()
 
@@ -212,8 +221,6 @@
 				controllaCollisioniBonus();
 				aggiornaBonus();
 
-				//console.log("Colpi rimanenti: " + powerUpAttivi[1]);
-
 				// CALCOLO LO SPOSTAMENTO CHE DOVREBBE FARE LA MACCHINA
 				scegliSpostamentoMacchina(pivotMacchina.position.z);  // in base alla posizione della macchina...
 				if(!gameOver){
@@ -226,20 +233,28 @@
 				if(muoviDx){
 					muoviMacchinaDx(pivotMacchina);
 				}
-				// ALL'ARRIVO, SE VINCO FACCIO RUOTARE LA TELECAMERA ATTORNO ALLA MACCHINA E INSERISCO IL BOTTONE DI NUOVA PARTITA
+				// ALL'ARRIVO
 				if(pivotMacchina.position.z < -10000){
-					rotateCamera();
-					controllaBottone();
+					rotateCamera();  // faccio ruotare la camera attorno alla macchina
+					controllaBottone();  // inserisco il bottone per iniziare una nuova partita
+					if(audioMacchina.isPlaying){
+						audioMacchina.stop();
+					}
+					if(!suonoVittoria){
+						audioVittoria.play();
+						suonoVittoria = true;
+				}
 				}
 			}else{  // gameOver
 				// FERMO LA CANZONE
-				audioMacchina.pause();
+				if(audioMacchina.isPlaying){
+					audioMacchina.stop();
+				}
 				// RIPRODUCO IL SUONO DI GAMEOVER se non ancora eseguito
 				if(!suonoGameOver){
 					audioGameOver.play();
 					suonoGameOver = true;
 				}
-  
 				// FACCIO RUOTARE LA TELECAMERA ATTORNO ALLA MACCHINA E INSERISCO IL BOTTONE DI NUOVA PARTITA
 				rotateCamera();
 				controllaBottone();
