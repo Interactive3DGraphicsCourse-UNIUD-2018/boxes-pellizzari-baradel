@@ -83,6 +83,9 @@ Dove *xDestra * 1,25* rappresenta un fattore di scala del movimento, mentre *piv
 * Aggiunte 3 mesh cubiche temporanee per 3 tipologie di power up, un moltiplicatore punti, un cannone per abbattere gli ostacoli e uno scudo (rappresentati rispettivamente con un cubo giallo, uno grigio e uno rosso);
 * Aggiunte le animazioni idle delle 3 tipologie di power up mentre sono sulla pista;
 
+###21/04
+* Aggiunti alcuni effetti sonori: una musica di sottofondo, un suono quando viene preso un PowerUp e un suono che indica il gameover a fine partita
+
 ### Sito delle Texture TEMP
 http://www.wildtextures.com/category/free-textures/
 

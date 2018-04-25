@@ -115,7 +115,7 @@
 		}
 
 		function aggiungiAlbero(x, z){
-			var altezzaAlbero = 2;
+			var altezzaAlbero = randomConRange(2,3);
 			var geometriaAlbero = new THREE.BoxGeometry(1, altezzaAlbero, 1);
 			var materialeAlbero = new THREE.MeshPhongMaterial({color:"brown"});
 			var tronco = new THREE.Mesh(geometriaAlbero, materialeAlbero);
@@ -123,7 +123,7 @@
 			tronco.receiveShadow = true;
 			tronco.castShadow = true;
 			scene.add(tronco);
-			var dimensioneCuboPartenza = 3;
+			var dimensioneCuboPartenza = altezzaAlbero*3/2;
 			var y = yFineRuote + altezzaAlbero + 0.05;  // y di partenza per le "foglie"
 			aggiungiFoglie(dimensioneCuboPartenza, x, y, z);
 		}
