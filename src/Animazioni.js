@@ -96,7 +96,16 @@
 				powerUpInScena[i].position.y = Math.sin(angoloOscillazioneVerticale) + 0.7; //Oscillazione verticale del powerUp;
 				angoloOscillazioneVerticale = angoloOscillazioneVerticale%(Math.PI*2) + 0.002;
 				powerUpInScena[i].rotateY(0.05);
+				if(powerUpInScenaTipo[i] == "stella"){  // TEMP se e' una stella uso lo shader
+					aggiornaColore(powerUpInScena[i]);
+				}
 			}
+		}
+		// uso uno shader per modificare ad ogni frame il colore del powerUp sulla scena
+		function aggiornaColore(sphere){
+			colore3 = randomConRange(1,40)/100; // giallo
+			var uniforms = { materialColor:	{ type: "v3", value: new THREE.Vector3() } };
+			sphere.material.uniforms.materialColor.value = new THREE.Vector3(1.0,1.0,colore3);
 		}
 		// CAMERA A FINE PARTITA
 		function rotateCamera(){
@@ -139,7 +148,7 @@
 		function stampaTesto(testo, materialeTesto, z){
 			var fontLoader = new THREE.FontLoader();
 
-			fontLoader.load('font/helvetiker_bold.typeface.json', function(font) {
+			fontLoader.load('../font/helvetiker_bold.typeface.json', function(font) {
 				var geometriaTesto = new THREE.TextGeometry(testo, {
 					font: font,
 					size: 3,

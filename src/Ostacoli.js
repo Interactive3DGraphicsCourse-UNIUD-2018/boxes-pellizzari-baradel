@@ -82,7 +82,7 @@
 		function aggiungiMasso(x,z){
 			var altezzaMasso = 2;
 			var geometriaMasso = new THREE.BoxGeometry(2,altezzaMasso,2);
-			var texture = THREE.ImageUtils.loadTexture('textures/masso.jpg');
+			var texture = THREE.ImageUtils.loadTexture('../textures/masso.jpg');
 			var materialeMasso = new THREE.MeshPhongMaterial( { map: texture } );
 			var masso = new THREE.Mesh(geometriaMasso, materialeMasso);
 			masso.castShadow = true;
@@ -93,7 +93,7 @@
 
 		function aggiungiTronco(x,z){
 			var geometriaTronco = new THREE.BoxGeometry(3,1,1);
-			var texture = THREE.ImageUtils.loadTexture('textures/tronco.jpg');
+			var texture = THREE.ImageUtils.loadTexture('../textures/tronco.jpg');
 			var materialeTronco = new THREE.MeshPhongMaterial( { map: texture } );
 			var tronco = new THREE.Mesh(geometriaTronco, materialeTronco);
 			tronco.castShadow = true;
@@ -104,7 +104,7 @@
 
 		function aggiungiAsteroide(x,z){
 			var geometriaAsteroide = new THREE.BoxGeometry(4,4,4);
-			var texture = THREE.ImageUtils.loadTexture('textures/asteroide.jpg');
+			var texture = THREE.ImageUtils.loadTexture('../textures/asteroide.jpg');
 			var materialeAsteroide = new THREE.MeshPhongMaterial( { map: texture } );
 			var asteroide = new THREE.Mesh(geometriaAsteroide, materialeAsteroide);
 			asteroide.castShadow = true;

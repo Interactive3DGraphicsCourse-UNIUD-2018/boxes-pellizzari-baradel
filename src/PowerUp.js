@@ -34,15 +34,20 @@ function aggiungiPowerUp(){
 // Aggiunge la stella (moltiplicatore) alla scena e agli array
 function aggiungiStella(z){
   var x = scegliLato();
-  var geometriaStella = new THREE.BoxGeometry(2,2,2); // TEMP per testare;
-  var materialeStella = new THREE.MeshPhongMaterial({color: 0xffff00});
+  var geometriaStella = new THREE.SphereBufferGeometry(1,16,16);
+  var vs = document.getElementById("vertexStella").textContent;
+  var fs = document.getElementById("fragmentStella").textContent;
+  var uniforms = { materialColor:	{ type: "v3", value: new THREE.Vector3() } };
+	var materialeStella = new THREE.ShaderMaterial({ uniforms: uniforms, vertexShader: vs, fragmentShader: fs });
   var stellaMesh = new THREE.Mesh(geometriaStella, materialeStella);
+  
+  //aggiornaPosiz(stellaMesh);
+  aggiornaColore(stellaMesh);
 
-  stellaMesh.position.set(x/7.2, 1, -z);
-
-  scene.add(stellaMesh);
-  powerUpInScena.push(stellaMesh);
-  powerUpInScenaTipo.push("stella");
+	stellaMesh.position.set(x/7.2, 1, -z);
+	scene.add(stellaMesh);
+	powerUpInScena.push(stellaMesh);
+	powerUpInScenaTipo.push("stella");
 }
 
 // Aggiunge il cannone alla scena e agli array
