@@ -116,6 +116,10 @@ Nuova idea sulla struttura:
 
 Questi due file per ora hanno solo il collegamento al file successivo nella sequenza, le rappresentazioni testuali/grafiche devono ancora essere implementate.
 
+### 08/05
+
+Alcuni fix per sistemare le ultime cose aggiunte, ad esempio a volte non partiva la musica.. 
+
 ### Sito delle Texture TEMP
 
 http://www.wildtextures.com/category/free-textures/
