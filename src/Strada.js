@@ -6,7 +6,7 @@
 			xSinistra = -larghezzaStrada/4;  // il centro della metà della strada a sx dell'origine
 			var geometriaStrada = new THREE.BoxGeometry(larghezzaStrada, altezzaStrada, lunghezzaStrada);
 
-			var texture = THREE.ImageUtils.loadTexture('../textures/asfalto.jpg'); // new THREE.TextureLoader().load('../textures/asfalto.jpg');
+			var texture = new THREE.TextureLoader().load('../textures/asfalto.jpg'); 
 			texture.wrapS = THREE.RepeatWrapping;
 			texture.wrapT = THREE.RepeatWrapping;
 			texture.repeat.set( 4, 2000 );
@@ -72,7 +72,7 @@
 		}
 
 		function aggiungiCartello(z, altezzaPalo, yPalo){
-			var texture = THREE.ImageUtils.loadTexture('../textures/cartelloFinish.png'); // new THREE.TextureLoader().load('../textures/cartelloFinish.png');
+			var texture = new THREE.TextureLoader().load('../textures/cartelloFinish.png'); 
 			var materials = [
 			   new THREE.MeshPhongMaterial({ color: "black" }),  // faccia a destra
 			   new THREE.MeshPhongMaterial({ color: "black" }),  // faccia a sinistra
@@ -91,7 +91,7 @@
 		function inserisciErba(larghezzaStrada, altezzaStrada, lunghezzaStrada, yStrada){
 			var larghezzaErba = 30;
 			var geometriaErba = new THREE.BoxGeometry(larghezzaErba, altezzaStrada, lunghezzaStrada);
-			var texture = THREE.ImageUtils.loadTexture('../textures/erba.jpg'); // new THREE.TextureLoader().load('../textures/erba.jpg');
+			var texture = new THREE.TextureLoader().load('../textures/erba.jpg');
 			texture.wrapS = THREE.RepeatWrapping;
 			texture.wrapT = THREE.RepeatWrapping;
 			texture.repeat.set( 10, 1500 );
