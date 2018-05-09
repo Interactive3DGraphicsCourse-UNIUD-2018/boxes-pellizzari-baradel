@@ -23,6 +23,10 @@ Luca P:
 * Usare una spotlight per il fanale della macchina
 * Aggiungere un bonus "misterioso" o casuale (anche con effetto negativo? es: visuale oscurata/nebbia fitta, inversione comandi)
 * TextureLoader() invece di loadTexture?????? cosi evitiamo un centinaio di warnings
+* Vedere:  
+    * gametexture.com, converted to textures with Allegorithmic Substance Player
+    * https://www.cc0textures.com 
+    * https://megascans.se/library/types/everything
 
 Da decidere:
 
